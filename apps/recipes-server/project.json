@@ -1,0 +1,53 @@
+{
+  "name": "recipes-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/recipes-server/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/recipes-server",
+        "main": "apps/recipes-server/src/main.ts",
+        "tsConfig": "apps/recipes-server/tsconfig.app.json",
+        "assets": ["apps/recipes-server/src/assets"],
+        "webpackConfig": "apps/recipes-server/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "recipes-server:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "recipes-server:build:development"
+        },
+        "production": {
+          "buildTarget": "recipes-server:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/recipes-server/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

@@ -4,89 +4,69 @@
   "sourceRoot": "apps/recipes/src",
   "projectType": "application",
   "targets": {
-    "start": {
-      "executor": "@nx/expo:start",
-      "dependsOn": ["ensure-symlink", "sync-deps"],
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
-        "port": 8081
+        "outputPath": "dist/apps/recipes"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
       }
     },
     "serve": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
       "options": {
-        "command": "nx start recipes"
+        "buildTarget": "recipes:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "recipes:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "recipes:build:production",
+          "hmr": false
+        }
       }
     },
-    "run-ios": {
-      "executor": "@nx/expo:run",
-      "dependsOn": ["ensure-symlink", "sync-deps"],
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
       "options": {
-        "platform": "ios"
+        "buildTarget": "recipes:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "recipes:build:development"
+        },
+        "production": {
+          "buildTarget": "recipes:build:production"
+        }
       }
     },
-    "run-android": {
-      "executor": "@nx/expo:run",
-      "dependsOn": ["ensure-symlink", "sync-deps"],
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "platform": "android"
-      }
-    },
-    "build": {
-      "executor": "@nx/expo:build",
-      "options": {}
-    },
-    "submit": {
-      "executor": "@nx/expo:submit",
-      "options": {}
-    },
-    "build-list": {
-      "executor": "@nx/expo:build-list",
-      "options": {}
-    },
-    "sync-deps": {
-      "executor": "@nx/expo:sync-deps",
-      "options": {}
-    },
-    "ensure-symlink": {
-      "executor": "@nx/expo:ensure-symlink",
-      "options": {}
-    },
-    "prebuild": {
-      "executor": "@nx/expo:prebuild",
-      "dependsOn": ["ensure-symlink", "sync-deps"],
-      "options": {}
-    },
-    "install": {
-      "executor": "@nx/expo:install",
-      "options": {}
-    },
-    "update": {
-      "executor": "@nx/expo:update",
-      "options": {}
-    },
-    "export": {
-      "executor": "@nx/expo:export",
-      "dependsOn": ["ensure-symlink", "sync-deps"],
-      "options": {
-        "platform": "all",
-        "outputDir": "../../dist/apps/recipes"
-      }
-    },
-    "export-web": {
-      "executor": "@nx/expo:export",
-      "options": {
-        "bundler": "metro"
+        "reportsDirectory": "../../coverage/apps/recipes"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+    "serve-static": {
+      "executor": "@nx/web:file-server",
       "options": {
-        "jestConfig": "apps/recipes/jest.config.ts"
+        "buildTarget": "recipes:build"
       }
     }
   },

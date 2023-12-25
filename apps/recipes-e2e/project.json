@@ -1,68 +1,22 @@
 {
   "name": "recipes-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/recipes-e2e/src",
   "projectType": "application",
+  "sourceRoot": "apps/recipes-e2e/src",
   "targets": {
-    "build-ios": {
-      "executor": "@nx/detox:build",
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
       "options": {
-        "detoxConfiguration": "ios.sim.local"
+        "cypressConfig": "apps/recipes-e2e/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "recipes:serve"
       },
       "configurations": {
-        "bare": {
-          "detoxConfiguration": "ios.sim.debug"
-        },
         "production": {
-          "detoxConfiguration": "ios.sim.release"
-        }
-      }
-    },
-    "test-ios": {
-      "executor": "@nx/detox:test",
-      "options": {
-        "detoxConfiguration": "ios.sim.local",
-        "buildTarget": "recipes-e2e:build-ios"
-      },
-      "configurations": {
-        "bare": {
-          "detoxConfiguration": "ios.sim.debug",
-          "buildTarget": "recipes-e2e:build-ios:bare"
+          "devServerTarget": "recipes:serve:production"
         },
-        "production": {
-          "detoxConfiguration": "ios.sim.release",
-          "buildTarget": "recipes-e2e:build-ios:production"
-        }
-      }
-    },
-    "build-android": {
-      "executor": "@nx/detox:build",
-      "options": {
-        "detoxConfiguration": "android.emu.local"
-      },
-      "configurations": {
-        "bare": {
-          "detoxConfiguration": "android.emu.debug"
-        },
-        "production": {
-          "detoxConfiguration": "android.emu.release"
-        }
-      }
-    },
-    "test-android": {
-      "executor": "@nx/detox:test",
-      "options": {
-        "detoxConfiguration": "android.emu.local",
-        "buildTarget": "recipes-e2e:build-android"
-      },
-      "configurations": {
-        "bare": {
-          "detoxConfiguration": "android.emu.debug",
-          "buildTarget": "recipes-e2e:build-android:bare"
-        },
-        "production": {
-          "detoxConfiguration": "android.emu.release",
-          "buildTarget": "recipes-e2e:build-android:production"
+        "ci": {
+          "devServerTarget": "recipes:serve-static"
         }
       }
     },
@@ -71,6 +25,6 @@
       "outputs": ["{options.outputFile}"]
     }
   },
-  "tags": [],
-  "implicitDependencies": ["recipes"]
+  "implicitDependencies": ["recipes"],
+  "tags": []
 }
