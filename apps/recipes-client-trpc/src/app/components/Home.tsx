@@ -7,6 +7,7 @@ return(
     <>
     <button onClick={()=> navigate('/recipes')}>All Recipes</button>
     <button onClick={()=> navigate(`/recipe/${id}`)}>Recipe by id</button>
+    <button onClick={()=> navigate('/register')}>Register</button>
     </>
 )
 }

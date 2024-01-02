@@ -5,7 +5,7 @@ export default function AllRecipes() {
 
   return (
     <>
-      {recipes.data?.map((recipe) => (
+      {recipes.data?.map((recipe: any) => (
         <div>{recipe.title}</div>
       ))
       }

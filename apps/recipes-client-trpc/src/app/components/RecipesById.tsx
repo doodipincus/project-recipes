@@ -7,11 +7,11 @@ export default function RecipesById() {
     if (id) {
         console.log(id);
 
-        const recipe = trpc.recipeById.useQuery(id);
-        console.log('recipe', recipe.data);
-        const f = recipe.data && recipe.data[0] ? recipe.data[0].title : 'boom'
+        const recipeById = trpc.recipeById.useQuery(id);
+        console.log('recipe', recipeById.data);
+        const recipe = recipeById.data && recipeById.data[0] ? recipeById.data[0].title : 'boom'
         // return <div>{recipe.data && recipe.data[0]}</div>;
-        return <div>{f}</div>
+        return <div>{recipe}</div>
     }
     return <div>not id</div>
 }

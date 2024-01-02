@@ -1,7 +1,14 @@
 import { config } from 'dotenv';
 import pg from 'pg';
+import { getUserByEmail, createUser } from '../models/functions';
+
 const { Pool } = pg;
 
+interface Register {
+  user_name: string;
+  email: string;
+  password: string;
+}
 config();
 export interface Recipes {
   recipe_id: string;
@@ -22,18 +29,26 @@ export interface Recipes {
 export const db = {
   recipe: {
     findMany: async () => {
-      const query = 'SELECT * FROM recipes';
+      const query = 'SELECT * FROM recipes_schema.recipes';
       const { rows } = await sendQueryToDatabase(query);
-      console.log(rows);
+      // console.log(rows);
       if (rows) return rows;
     },
 
     findById: async (id: string) => {
-      const query = `SELECT * FROM recipes WHERE recipe_id = $1`;
+      const query = `SELECT * FROM recipes_schema.recipes WHERE recipe_id = $1`;
       const values = [id];
       const { rows } = await sendQueryToDatabase(query, values);
-      console.log('rows', rows);
+      // console.log('rows', rows);
       if (rows) return rows;
+    },
+    register: async (registerInput: Register) => {
+      const ifIsUser = await getUserByEmail(registerInput.email);
+      if (ifIsUser) {
+        return 'user is';
+      }
+      const register = await createUser(registerInput);
+      return register;
     },
   },
 };

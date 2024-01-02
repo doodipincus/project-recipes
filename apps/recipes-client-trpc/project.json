@@ -6,10 +6,12 @@
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
+      // "executor": "@nx/web:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/recipes-client-trpc"
+        "outputPath": "dist/apps/recipes-client-trpc",
+        "postcssConfig": "apps/recipes-client-trpc/postcss.config.js"
       },
       "configurations": {
         "development": {

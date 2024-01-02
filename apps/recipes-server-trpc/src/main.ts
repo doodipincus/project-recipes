@@ -88,8 +88,22 @@ import { z } from 'zod';
 import cors from 'cors';
 import { db } from './db';
 import { publicProcedure, router } from './trpc';
-import dotenv, { config } from 'dotenv';
+import { config } from 'dotenv';
 import pg from 'pg';
+import {
+  createUser,
+  getUsers,
+  updatedUser,
+  deletedUser,
+} from '../models/functions';
+import { createTable } from '../models/userModel';
+
+interface Register{
+  user_name: string;
+  email: string;
+  password:string;
+}
+
 const { Pool } = pg;
 
 config();
@@ -107,20 +121,36 @@ const appRouter = router({
     const recipe = await db.recipe.findById(input);
     return recipe;
   }),
+  register: publicProcedure
+    .input(
+      z.object({
+        user_name: z.string(),
+        email: z.string(),
+        password: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      const { input } = opts;
+      const newUser = await db.recipe.register(input as Register);
+      return newUser;
+    }),
 });
 
 // Export type router type signature,
 // NOT the router itself.
 export type AppRouter = typeof appRouter;
 
-const server = createHTTPServer({
-  router: appRouter,
-});
 (async () => {
-  const pool = new Pool();
+  const pool = new Pool(); 
   const res = await pool.connect();
   res.release();
   console.log(`Database connection test completed successfully`);
+
+  await createTable();
+  // await createUser();
+  // await getUsers();
+  // await updatedUser();
+  // await deletedUser();
 
   createHTTPServer({
     middleware: cors(),

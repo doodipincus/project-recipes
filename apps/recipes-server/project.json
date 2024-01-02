@@ -26,7 +26,8 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "recipes-server:build"
+        "buildTarget": "recipes-server:build",
+        "port": 1234
       },
       "configurations": {
         "development": {
