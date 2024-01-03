@@ -3,16 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from '../src/main';
 
 
-export const User = sequelize.define(
-  'Users',
+export const Recipe = sequelize.define(
+  'recipe',
   {
-    user_id: {
+    recipe_id: {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
       defaultValue: () => uuidv4(),
     },
-    user_name: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -36,14 +36,14 @@ export const User = sequelize.define(
     },
   },
   {
-    tableName: 'Users',
+    tableName: 'recipes',
     schema: 'recipes_schema'
   }
 );
 
-export const createTable = async ()=>{
+export const createTableRecipes = async ()=>{
   try {
-    await User.sync()
+    await Recipe.sync()
   } catch (error) {
     console.error(error);
   }

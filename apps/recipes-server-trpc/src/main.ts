@@ -97,6 +97,9 @@ import {
   deletedUser,
 } from '../models/functions';
 import { createTable } from '../models/userModel';
+import { createTableRecipes } from '../models/recipeModel'
+// import { sequelize } from '../models/seqPG';
+import { Sequelize } from 'sequelize';
 
 interface Register{
   user_name: string;
@@ -140,11 +143,20 @@ const appRouter = router({
 // NOT the router itself.
 export type AppRouter = typeof appRouter;
 
+
+export const sequelize = new Sequelize(process.env.PGDATABASE, process.env.PGUSER  , process.env.PGPASSWORD, {
+  host: process.env.PGHOST,
+  dialect:'postgres'
+ });
+
 (async () => {
-  const pool = new Pool(); 
-  const res = await pool.connect();
-  res.release();
-  console.log(`Database connection test completed successfully`);
+  // const pool = new Pool(); 
+  // const res = await pool.connect();
+  // res.release();
+
+
+  // console.log(`Database connection test completed successfully`);
+
 
   await createTable();
   // await createUser();

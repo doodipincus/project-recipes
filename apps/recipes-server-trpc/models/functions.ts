@@ -1,5 +1,5 @@
 import { User } from './userModel';
-import { sequelize } from '../models/seqPG';
+// import { sequelize } from '../models/seqPG';
 
 
 interface Register{
