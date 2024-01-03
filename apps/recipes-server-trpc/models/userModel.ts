@@ -43,6 +43,8 @@ export const User = sequelize.define(
 
 export const createTable = async ()=>{
   try {
+    console.log('Creating table');
+    
     await User.sync()
   } catch (error) {
     console.error(error);

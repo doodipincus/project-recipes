@@ -89,13 +89,13 @@ import cors from 'cors';
 import { db } from './db';
 import { publicProcedure, router } from './trpc';
 import { config } from 'dotenv';
-import pg from 'pg';
-import {
-  createUser,
-  getUsers,
-  updatedUser,
-  deletedUser,
-} from '../models/functions';
+// import pg from 'pg';
+// import {
+//   createUser,
+//   getUsers,
+//   updatedUser,
+//   deletedUser,
+// } from '../models/functions';
 import { createTable } from '../models/userModel';
 
 interface Register{
@@ -104,7 +104,7 @@ interface Register{
   password:string;
 }
 
-const { Pool } = pg;
+// const { Pool } = pg;
 
 config();
 const appRouter = router({
@@ -141,10 +141,12 @@ const appRouter = router({
 export type AppRouter = typeof appRouter;
 
 (async () => {
-  const pool = new Pool(); 
-  const res = await pool.connect();
-  res.release();
-  console.log(`Database connection test completed successfully`);
+  console.log('start');
+  
+  // const pool = new Pool(); 
+  // const res = await pool.connect();
+  // res.release();
+  // console.log(`Database connection test completed successfully`);
 
   await createTable();
   // await createUser();
