@@ -1,6 +1,6 @@
 import { DataTypes, Sequelize } from 'sequelize';
-import { sequelize } from './seqPG';
 import { v4 as uuidv4 } from 'uuid';
+import { sequelize } from './seqPG';
 
 
 export const User = sequelize.define(
@@ -24,6 +24,16 @@ export const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    rank: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -41,10 +51,10 @@ export const User = sequelize.define(
   }
 );
 
-export const createTable = async ()=>{
+export const createTable = async () => {
   try {
     console.log('Creating table');
-    
+
     await User.sync()
   } catch (error) {
     console.error(error);

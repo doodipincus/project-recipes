@@ -1,47 +1,11 @@
-import { config } from 'dotenv';
-import pg from 'pg';
-import { getUserByEmail, createUser } from '../models/functions';
+import 'dotenv/config';
+import { getUserByEmail, createUser, updatedUser, deletedUser, getUsers, incrementRank } from './models/functions';
+import { Register, SignInInput } from './interface';
 
-const { Pool } = pg;
-
-interface Register {
-  user_name: string;
-  email: string;
-  password: string;
-}
-config();
-export interface Recipes {
-  recipe_id: string;
-  title: string;
-  category: string;
-  sensitivity: string;
-  creator: string;
-  rating: number;
-  country_of_origin: string;
-  difficulty: string;
-  image: string;
-  ingredients: string[];
-  instructions: string;
-  preparation_time: string;
-}
 
 // Imaginary database
 export const db = {
-  recipe: {
-    findMany: async () => {
-      const query = 'SELECT * FROM recipes_schema.recipes';
-      const { rows } = await sendQueryToDatabase(query);
-      // console.log(rows);
-      if (rows) return rows;
-    },
-
-    findById: async (id: string) => {
-      const query = `SELECT * FROM recipes_schema.recipes WHERE recipe_id = $1`;
-      const values = [id];
-      const { rows } = await sendQueryToDatabase(query, values);
-      // console.log('rows', rows);
-      if (rows) return rows;
-    },
+  users: {
     register: async (registerInput: Register) => {
       const ifIsUser = await getUserByEmail(registerInput.email);
       if (ifIsUser) {
@@ -50,16 +14,42 @@ export const db = {
       const register = await createUser(registerInput);
       return register;
     },
+    signIn: async (signInInput: SignInInput) => {
+      const signIn = await getUserByEmail(signInInput.email)
+      if (signIn){
+        if(signIn.dataValues.password === signInInput.password) {         
+        return signIn
+        }
+        return 'no password';
+      } 
+      return 'user not found'
+    },
+    updateUser: async (input) => {
+      const { email, update } = input;
+      const updateUser = await updatedUser(email, update);
+      if (updateUser) return updateUser
+      return 'user not found'
+    },
+    deleteUser: async (email: string) => {
+      const deleteUser = await deletedUser(email);
+      if (deleteUser) return deleteUser
+      return 'user not found'
+    },
+    getUsers: async () => {
+      const users = await getUsers();
+      if (users) return users
+      return 'users not found'
+    },
+    getUserByEmail: async (email: string) => {
+      const user = await getUserByEmail(email);
+      if (user) return user
+      return 'user not found'
+    },
+    incrementRank: async (email: string) => {
+      const increment = await incrementRank(email);
+      if (increment) return increment
+      return 'user not found'
+    }
   },
 };
 
-const sendQueryToDatabase = async (
-  query: string,
-  values?: any[]
-): Promise<any> => {
-  const pool = new Pool();
-  const res = await pool.connect();
-  const data = await res.query(query, values).catch((err) => console.log(err));
-  res.release();
-  return data;
-};

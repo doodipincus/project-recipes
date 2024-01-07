@@ -1,15 +1,19 @@
-import { useNavigate } from "react-router-dom"
+import Header from './Header';
+import SideBar from './SideBar';
+import AllRecipes from './recipes/AllRecipes';
+import New from './users/new';
 
-const Home = () =>{
-const navigate = useNavigate()
-const id = 'eadaa6d4-0f1b-4ca9-9fbf-fa098daa16f6'
-return(
+const Home = () => {
+  return (
     <>
-    <button onClick={()=> navigate('/recipes')}>All Recipes</button>
-    <button onClick={()=> navigate(`/recipe/${id}`)}>Recipe by id</button>
-    <button onClick={()=> navigate('/register')}>Register</button>
+      <Header />
+      <div className="flex">
+        <SideBar />
+        <AllRecipes />
+      </div>
+      <New />
     </>
-)
-}
+  );
+};
 
-export default Home
+export default Home;
