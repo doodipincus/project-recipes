@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { publicProcedure } from './trpc';
-import { serviceUsers } from './service/serviceUsers';
-import { Register, SignInInput } from './interface/interfacesUsers';
+import { publicProcedure, router } from '../trpc';
+import { serviceUsers } from '../service/serviceUsers';
+import { Register, SignInInput } from '../interface/interfacesUsers';
 
-export const routerToApp = {
+export const usersRouter = router({
   register: publicProcedure
     .input(
       z.object({
@@ -87,4 +87,4 @@ export const routerToApp = {
       console.error(err);
     }
   }),
-};
+})

@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { createFestival, getFestivals } from '../dal/dalFestivals';
+import { createFestival, deleteFestivalDal, getFestivals } from '../dal/dalFestivals';
 import { Festivals } from '../interface/interfacesFestivals';
 
 // Imaginary database
-export const serviceUsers = {
+export const serviceFestivals = {
     festivals: {
         getAllFestivals: async () => {
             const festivals = await getFestivals();
@@ -13,6 +13,11 @@ export const serviceUsers = {
         addFestival: async (festivalInput: Festivals) => {
             const create = await createFestival(festivalInput);
             return create;
+        },
+        deleteFestival: async (id: string) => {
+            const deleteFestival = await deleteFestivalDal(id);
+            if (deleteFestival) return deleteFestival;
+            return 'recipe not found';
         },
     }
 };

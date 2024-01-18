@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
 
@@ -41,7 +41,7 @@ export const Festival = sequelize.define(
             }
     },
         festival_location: {
-            type: DataTypes.ARRAY(DataTypes.NUMBER),
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: false,
         },
     },
@@ -56,6 +56,7 @@ export const Festival = sequelize.define(
 
 export const createTableFestivals = async () => {
     try {
+        console.log('Creating table festivals');
         await Festival.sync({ alter: true })
     } catch (error) {
         console.error(error);

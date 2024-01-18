@@ -3,12 +3,14 @@ import cors from 'cors';
 import { router } from './trpc';
 import 'dotenv/config'
 import { createTableUsers } from './models/userModel';
-import { routerToApp } from './router';
+import { usersRouter } from './router/routerUsers';
 import { createTableRecipes } from './models/recipeModel';
 import { createTableFestivals } from './models/festivalModal';
+import { recipesRouter } from './router/routerRecipes';
+import { festivalsRouter } from './router/routerFestivals';
 
 
-const appRouter = router(routerToApp);
+const appRouter = router({users: usersRouter, recipes: recipesRouter, festivals: festivalsRouter});
 
 export type AppRouter = typeof appRouter;
 

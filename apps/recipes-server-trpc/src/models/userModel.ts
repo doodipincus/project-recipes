@@ -72,7 +72,7 @@ export const User = sequelize.define<Model<UserBack, UserAttributes>>(
 
 export const createTableUsers = async () => {
   try {
-    console.log('Creating table');
+    console.log('Creating table users');
     await User.sync({alter: true})
   } catch (error) {
     console.error(error);

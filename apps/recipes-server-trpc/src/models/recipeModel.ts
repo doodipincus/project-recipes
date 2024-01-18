@@ -61,11 +61,11 @@ export const Recipe = sequelize.define(
       allowNull: false,
     },
     num_reviews: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
      rating: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
   },
@@ -80,6 +80,7 @@ export const Recipe = sequelize.define(
 
 export const createTableRecipes = async () => {
   try {
+    console.log('Creating table recipes');
     await Recipe.sync({alter:true})
   } catch (error) {
     console.error(error);

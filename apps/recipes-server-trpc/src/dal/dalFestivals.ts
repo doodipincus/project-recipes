@@ -54,11 +54,11 @@ export const getFestivals = async () => {
 //     return false
 // };
 
-// export const deleteRecipeDal = async (id: string) => {
-//     await Recipe.destroy({
-//         where: {
-//             id: id,
-//         },
-//     });
-//     return true;
-// };
+export const deleteFestivalDal = async (id: string) => {
+    await Festival.destroy({
+        where: {
+            id: id,
+        },
+    });
+    return true;
+};
