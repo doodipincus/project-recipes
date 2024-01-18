@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { trpc2 } from '../../utils/trpc';
+import { trpc } from '../../utils/trpc';
 
 const UpdateUser = () => {
   const [email, setEmail] = useState('');
@@ -7,7 +7,7 @@ const UpdateUser = () => {
 
   const send = async() => {
     if (email) {
-      const send = await trpc2.updateUser.mutate({email,update:{user_name:'',password:newPassword, email:''}});
+      const send = await trpc.updateUser.mutate({email,update:{user_name:'',password:newPassword, email:''}});
       if (send) console.log(send);
     }
   };

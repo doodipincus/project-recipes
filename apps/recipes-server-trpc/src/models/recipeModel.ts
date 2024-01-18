@@ -16,34 +16,71 @@ export const Recipe = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
+    category: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    password: {
+    image: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    createdAt: {
-      type: DataTypes.DATE,
+    creator_name: {
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: Sequelize.fn("now")
     },
-    updatedAt: {
-      type: DataTypes.DATE,
+    creator_email: {
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: Sequelize.fn("now")
+      references: {
+        model: 'users',
+        key: 'email',
+      }
+    },
+    sensitivity: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    county_of_origin: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    difficulty: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    ingredients: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false,
+    },
+    instructions: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    preparation_time: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    num_reviews: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+    },
+     rating: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
     },
   },
   {
     tableName: 'recipes',
-    schema: 'recipes_schema'
+    schema: 'recipes_schema',
+    timestamps: true,
+    createdAt: true,
+    updatedAt: true,
   }
 );
 
-export const createTableRecipes = async ()=>{
+export const createTableRecipes = async () => {
   try {
-    await Recipe.sync()
+    await Recipe.sync({alter:true})
   } catch (error) {
     console.error(error);
   }

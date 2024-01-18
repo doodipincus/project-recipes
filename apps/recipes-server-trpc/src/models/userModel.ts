@@ -1,9 +1,29 @@
-import { DataTypes, Sequelize } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
+import { Model } from 'sequelize';
 
 
-export const User = sequelize.define(
+interface UserAttributes {
+  email: string;
+  password: string;
+  user_name: string;
+  isAdmin: boolean;
+  likes: number;
+  shared:number
+  user_id: string;
+}
+
+interface UserInstance {
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+interface UserBack extends UserInstance, UserAttributes { }
+
+
+export const User = sequelize.define<Model<UserBack, UserAttributes>>(
   'Users',
   {
     user_id: {
@@ -18,13 +38,19 @@ export const User = sequelize.define(
     },
     email: {
       type: DataTypes.STRING,
+      unique: true,
       allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    rank: {
+    likes: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    shared: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -34,28 +60,20 @@ export const User = sequelize.define(
       allowNull: false,
       defaultValue: false,
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.fn("now")
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.fn("now")
-    },
+
   },
   {
-    tableName: 'Users',
-    schema: 'recipes_schema'
-  }
+    tableName: 'users',
+    timestamps: true,
+    createdAt: true,
+    updatedAt: true,
+  },
 );
 
-export const createTable = async () => {
+export const createTableUsers = async () => {
   try {
     console.log('Creating table');
-
-    await User.sync()
+    await User.sync({alter: true})
   } catch (error) {
     console.error(error);
   }

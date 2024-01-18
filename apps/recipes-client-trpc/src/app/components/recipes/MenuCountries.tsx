@@ -1,18 +1,24 @@
-import { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import { countries } from '../../countries'
+import { Fragment, useState } from 'react';
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { countries } from '../../utils/countries';
+import { Recipes } from '../../interfaces/recipes';
+import { Prop } from '../../interfaces/props';
+import { classNames } from '../../css/classes';
 
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
+export default function MenuCountries({ props } : Prop) {
+  const [selected, setSelected] = useState(countries[3]);
 
-export default function MenuCountries() {
-  const [selected, setSelected] = useState(countries[3])
-
+  const {recipe, setRecipe} = props;
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selected} onChange={(e)=>{
+      console.log('change');
+      setSelected(e)
+      setRecipe({...recipe, countyOfOrigin: e.name})
+
+    }}
+      >
       {({ open }) => (
         <>
           {/* <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Assigned to</Listbox.Label> */}
@@ -22,7 +28,14 @@ export default function MenuCountries() {
                 <span className="ml-3 block truncate">{selected.name}</span>
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                <ChevronUpDownIcon
+                  className="h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+            // onChange={(e) => {
+            //   console.log('change');
+              
+            //   setNewRecipe(e.target.value)}}
+                />
               </span>
             </Listbox.Button>
 
@@ -49,7 +62,10 @@ export default function MenuCountries() {
                       <>
                         <div className="flex items-center">
                           <span
-                            className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}
+                            className={classNames(
+                              selected ? 'font-semibold' : 'font-normal',
+                              'ml-3 block truncate'
+                            )}
                           >
                             {contry.name}
                           </span>
@@ -75,5 +91,5 @@ export default function MenuCountries() {
         </>
       )}
     </Listbox>
-  )
+  );
 }

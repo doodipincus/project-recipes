@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { trpc2 } from "../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 
 const IncrementRank = () => {
     const [email, setEmail] = useState('');
     const send = async() =>{
         if(email) {
-            const send =await trpc2.incrementRank.mutate(email);
-            if (send) console.log(send);
+            const res =await trpc.incrementRank.mutate(email);
+            if (res) console.log(res);
           }
     }
     return (

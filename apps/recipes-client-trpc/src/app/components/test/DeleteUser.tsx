@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { trpc2 } from "../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 
 const DeleteUser = () => {
     const [email, setEmail] = useState('');
     const send = async() =>{
         if(email) {
-            const send =await trpc2.deleteUser.mutate(email);
+            const send =await trpc.deleteUser.mutate(email);
             if (send) console.log(send);
           }
     }

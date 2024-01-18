@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { trpc2 } from "../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 
 const UserByEmail = () => {
     const [email, setEmail] = useState('');
     const send =async () =>{
         if(email) {
-            const send =await trpc2.getUserByEmail.query(email);
+            const send =await trpc.getUserByEmail.query(email);
             if (send) console.log(send);
           }
     }
