@@ -1,16 +1,16 @@
 import { atom } from 'jotai';
-import { Recipes } from '../interfaces/recipes';
+import { RecipeBack, Recipes } from '../interfaces/recipes';
 
 export const registerAtom = atom({
-  user_name: '',
+  userName: '',
   email: '',
   password: '',
-  confirm_password: '',
+  confirmPassword: '',
 });
 
 export const signInAtom = atom({ email: '', password: '' });
 
-export const allRecipesAtom = atom<Recipes[]>([]);
+export const allRecipesAtom = atom<RecipeBack[]>([]);
 
 export const modalRegisterAtom = atom(false);
 
@@ -22,8 +22,8 @@ export const userIsLoggedInAtom = atom(false);
 type User = {
   email: string;
   password: string;
-  user_id: string;
-  user_name: string;
+  userId: string;
+  userName: string;
   isAdmin: boolean;
   likes: number;
   shared: number;
@@ -39,10 +39,12 @@ type Location = number[];
 export const newFestivalAtom = atom({
   festivalName: '',
   festivalDescription: '',
-  festivalDateTime: new Date(),
-  festivalImage: '',
+  festivalDateTime: '',
   festivalCreatorName: '',
   festivalCreatorEmail: '',
-  festivalCreatorImage: '',
-  festivalLocation: <Partial<Location>>[],
+  festivalImage: '',
+  festivalLocation: <Location>[],
 });
+
+
+// festival_id: string;

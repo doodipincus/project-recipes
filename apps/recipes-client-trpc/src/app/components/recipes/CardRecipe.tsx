@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Recipes } from '../../interfaces/recipes';
+import { RecipeBack } from '../../interfaces/recipes';
 
-const CardRecipe = ({ recipe }: { recipe: Recipes }) => {
+const CardRecipe = ({ recipe }: { recipe: RecipeBack }) => {
   const navigate = useNavigate();
   return (
     // <div
@@ -10,7 +10,7 @@ const CardRecipe = ({ recipe }: { recipe: Recipes }) => {
     // >
     <div
       className="mx-auto px-5"
-      onClick={() => navigate(`/recipe/${recipe.recipeId}`)}
+      onClick={() => navigate(`/recipe/${recipe.recipe_id}`)}
     >
       <div className="max-w-xs cursor-pointer rounded-lg bg-white p-2 shadow duration-150 hover:scale-105 hover:shadow-md">
         {recipe.image ? (
@@ -40,15 +40,11 @@ const CardRecipe = ({ recipe }: { recipe: Recipes }) => {
           {recipe.category}
         </p>
         <div className="relative mt-8 flex items-center gap-x-4">
-          <img
-            src={recipe.creatorImage}
-            alt=""
-            className="h-10 w-10 rounded-full bg-gray-50"
-          />
+          <img src="kj" alt="" className="h-10 w-10 rounded-full bg-gray-50" />
           <div className="text-sm leading-6">
             <p className="font-semibold text-gray-900">
               <span className="absolute inset-0" />
-              {recipe.creatorName}
+              {recipe.creator_name}
             </p>
           </div>
         </div>

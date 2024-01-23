@@ -1,8 +1,15 @@
-import { Recipes } from "./recipes";
+import { Recipes, RecipesInput } from "./recipes";
 
-export type Prop = {
+export type Props = {
     props: {
-      recipe: Partial<Recipes>;
-      setRecipe: (recipes: Partial<Recipes>) => void;
+      recipe: Recipes;
+      setRecipe: (recipes: Recipes) => void;
+    };
+  };
+
+  export type PropsInput = {
+    props: {
+      recipe: RecipesInput;
+      setRecipe: (recipes: RecipesInput) => void;
     };
   };

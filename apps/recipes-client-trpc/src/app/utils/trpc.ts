@@ -4,7 +4,12 @@ import type { AppRouter } from '../../../../recipes-server-trpc/src/main';
 export const trpc = createTRPCProxyClient<AppRouter>({
     links: [
         httpBatchLink({
-            url: 'http://localhost:2022'
+            url: 'http://localhost:2022',
+            headers() {
+                return {
+                    Authorization: String(localStorage.getItem("TOKEN"))
+                }
+            }
         })
     ]
 })

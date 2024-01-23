@@ -1,9 +1,38 @@
-import { DataTypes, Sequelize } from 'sequelize';
+import { DataTypes, Model, Sequelize } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
 
 
-export const Recipe = sequelize.define(
+
+
+export interface RecipeAttributes {
+  recipe_id: string;
+  title: string;
+  category: string;
+  image: string;
+  creator_name: string;
+  creator_email:string
+  sensitivity: string;
+  country_of_origin: string;
+  difficulty: string;
+  ingredients: string[];
+  instructions: string;
+  preparation_time: string;
+  num_reviews: number;
+  rating: number;
+}
+
+interface RecipeInstance {
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+interface RecipeBack extends RecipeInstance, RecipeAttributes { }
+
+
+
+export const Recipe = sequelize.define<Model<RecipeBack, RecipeAttributes>>(
   'recipe',
   {
     recipe_id: {
@@ -40,9 +69,9 @@ export const Recipe = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    county_of_origin: {
+    country_of_origin: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     difficulty: {
       type: DataTypes.STRING,
@@ -50,7 +79,7 @@ export const Recipe = sequelize.define(
     },
     ingredients: {
       type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
+      allowNull: true,
     },
     instructions: {
       type: DataTypes.STRING,
@@ -58,15 +87,17 @@ export const Recipe = sequelize.define(
     },
     preparation_time: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     num_reviews: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: 0,
     },
      rating: {
       type: DataTypes.DOUBLE,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: 0,
     },
   },
   {

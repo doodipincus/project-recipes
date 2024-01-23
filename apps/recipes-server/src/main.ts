@@ -19,6 +19,9 @@ app.use(
       enhanceGraphiql: true,
       dynamicJson:true,
       classicIds:true,
+      jwtPgTypeIdentifier: "recipes_schema.token",
+      jwtSecret:'blabla',
+      
     }
   )
 );

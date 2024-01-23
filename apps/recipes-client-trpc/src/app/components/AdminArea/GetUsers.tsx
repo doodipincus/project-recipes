@@ -12,7 +12,7 @@ const GetUsers = () => {
   const send = async () => {
     try {
       setLodingGlobal(true);
-      const res = await trpc.getUsers.query();
+      const res = await trpc.users.getUsers.query();
       if (res && typeof res !== 'string') {
         setLodingGlobal(false);
         console.log(res);
@@ -68,6 +68,7 @@ const GetUsers = () => {
                       <th className="pb-3 text-end min-w-[50px]">סטטוס</th>
                       <th className="pb-3 text-end min-w-[100px]">התעדכן ב</th>
                       <th className="pb-3 text-end min-w-[150px]">user id</th>
+                      <th className="pb-3 text-end min-w-[150px]">פעולות נוספות</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -1,18 +1,18 @@
 import 'dotenv/config';
 import { createRecipe, deleteRecipeDal, getRecipeByCreator, getRecipes, updateRecipeDal } from '../dal/dalRecipes';
-import { Recipes } from '../interface/interfacesRecipes';
+import { AddRecipes } from '../interface/interfacesRecipes';
 
 
 // Imaginary database
 export const serviceRecipe = {
     recipes: {
-        addrecipe: async (recipeInput: Recipes) => {
+        addrecipe: async (recipeInput: AddRecipes) => {
             const create = await createRecipe(recipeInput);
             return create;
         },
-        updateRecipe: async (input) => {
+        updateRecipe: async (input, token) => {
             const { id, update } = input;
-            const updateRecipe = await updateRecipeDal(id, update);
+            const updateRecipe = await updateRecipeDal(id, update, token);
             if (updateRecipe) return updateRecipe;
             return 'recipe not found';
         },
@@ -26,8 +26,8 @@ export const serviceRecipe = {
             if (recipes) return recipes;
             return 'recipes not found';
         },
-        deleteRecipe: async (id: string) => {
-            const deleteRecipe = await deleteRecipeDal(id);
+        deleteRecipe: async (id: string, token) => {
+            const deleteRecipe = await deleteRecipeDal(id, token);
             if (deleteRecipe) return deleteRecipe;
             return 'recipe not found';
         },

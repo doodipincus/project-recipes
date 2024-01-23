@@ -1,47 +1,35 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../trpc';
-import { serviceRecipe } from '../service/serviceResipes';
+import { publicProcedure, router, sharedProcedure } from '../trpc';
 import { serviceFestivals } from '../service/serviceFestivals';
-import { Festivals } from '../interface/interfacesFestivals';
+
 
 export const festivalsRouter = router({
-  addfestival: publicProcedure
+  addfestival: sharedProcedure
     .input(
       z.object({
-///////////////////////////
+        festivalName: z.string(),
+        festivalDescription: z.string(),
+        festivalDateTime: z.string(),
+        festivalImage: z.string(),
+        festivalCreatorName: z.string(),
+        festivalCreatorEmail: z.string(),
+        festivalLocation: z.array(z.number())
       })
     )
     .mutation(async (opts) => {
       try {
-        const { input } = opts;
-        const newFestival = await serviceFestivals.festivals.addFestival(input as Festivals);
+        const input = opts.input as Required<typeof opts.input>;
+        const newFestival = await serviceFestivals.festivals.addFestival({ ...input, festivalDateTime: new Date(input.festivalDateTime) });
         return newFestival;
       } catch (err) {
         console.error(err);
       }
     }),
-//   updateUser: publicProcedure
-//     .input(
-//       z.object({
-//         id: z.string(),
-//         update: z.object({
-// //////////////////////////////
-//         }),
-//       })
-//     )
-//     .mutation(async (opts) => {
-//       try {
-//         const { input } = opts;
-//         const recipe = await servicerecipe.recipes.updateRecipe(input);
-//         return recipe;
-//       } catch (err) {
-//         console.error(err);
-//       }
-//     }),
-  deleteFestival: publicProcedure.input(z.string()).mutation(async (opts) => {
+  deleteFestival: sharedProcedure.input(z.string()).mutation(async (opts) => {
     try {
       const { input } = opts;
-      const remove = await serviceFestivals.festivals.deleteFestival(input);
+      const { req, res } = opts.ctx
+      const remove = await serviceFestivals.festivals.deleteFestival(input, req.headers.authorization);
       return remove;
     } catch (err) {
       console.error(err);
@@ -55,13 +43,28 @@ export const festivalsRouter = router({
       console.error(err);
     }
   }),
-//   getRecipesByCreator: publicProcedure.input(z.string()).query(async (opts) => {
-//     try {
-//       const { input } = opts;
-//       const recipes = await servicerecipe.recipes.getRecipesByCreator(input);
-//       return recipes;
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   }),
+  // updatefestival: publicProcedure
+  //     .input(
+  //         id: z.string(),
+  //         update: z.object({
+  //             festivalName: z.string(),
+  //             festivalDescription: z.string(),
+  //             festivalDateTime: z.date(),
+  //             festivalImage: z.string(),
+  //             festivalCreatorName: z.string(),
+  //             festivalCreatorEmail: z.string(),
+  //             festivalLocation: z.array(z.number())
+  //         }),
+  //   })
+  // )
+  // .mutation(async (opts) => {
+  //             try {
+  //                 const { input } = opts;
+  //                 const recipe = await servicerecipe.recipes.updateRecipe(input);
+  //                 return recipe;
+  //             } catch (err) {
+  //                 console.error(err);
+  //             }
+  //         }),
+
 })

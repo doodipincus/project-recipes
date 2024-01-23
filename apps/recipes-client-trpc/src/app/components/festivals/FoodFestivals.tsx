@@ -2,68 +2,60 @@ import FestivalTable from './FestivalsTable';
 import MapFoodFestival from './MapFoodFestival';
 import AddFestivalModal from './addFestivalModal';
 import { lodingAtom } from '../../utils/atoms';
-import { Festivals, festivalsAndFeatures } from '../../interfaces/festivals';
+import { FestivalBack, festivalsAndFeatures } from '../../interfaces/festivals';
 import { useEffect, useState } from 'react';
 import { fromLonLat } from 'ol/proj';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import 'ol/ol.css';
-import { useSetAtom } from 'jotai';
-import { gql, useQuery } from '@apollo/client';
+import { useAtom, useSetAtom } from 'jotai';
+import { trpc } from '../../utils/trpc';
 
 
 export default function FoodFestivals() {
   const [features, setFeatures] = useState<festivalsAndFeatures[]>([]);
-  const [festivals, setFestivals] = useState<Festivals[]>([]);
+  const [festivals, setFestivals] = useState<FestivalBack[]>([]);
   const setLodingGlobal = useSetAtom(lodingAtom);
+  const [loading, setLoading] = useAtom(lodingAtom);
 
-  const GET_ALL_FESTIVAL = gql`
-    query MyQuery {
-      allFestivals(orderBy: FESTIVAL_DATE_TIME_ASC) {
-        nodes {
-          festivalCreatorEmail
-          festivalCreatorImage
-          festivalCreatorName
-          festivalDateTime
-          festivalDescription
-          festivalId
-          festivalImage
-          festivalLocation
-          festivalName
-        }
+
+
+  const getFestivals = async () =>{
+    try {
+      setLoading(true);
+      const res = await trpc.festivals.getFestivals.query();
+      if (res?.length && typeof res !== 'string') {
+        console.log('festivals',res);
+        setFestivals(res);
       }
+    } catch (error) {
+      console.error(error);
     }
-  `;
+  }
 
-  const { error, data, loading } = useQuery(GET_ALL_FESTIVAL);
+  useEffect(()=>{
+    getFestivals()
+  },[])
 
-  useEffect(() => {
-    if (error) console.log(error);
-    if (data?.allFestivals.nodes) {
-      console.log(data);
-      console.log(data.allFestivals.nodes);
-
-      setFestivals(data.allFestivals.nodes);
-      const festivalsAndFeatures = data?.allFestivals.nodes.map(
-        (f: Festivals) => {
-          const [lon, lat] = f.festivalLocation;
-          return {
-            festival: f,
-            feature: new Feature({
-              geometry: new Point(fromLonLat([lon, lat])),
-              name: f.festivalName,
-            }),
-          };
-        }
-      );
-      setFeatures(festivalsAndFeatures);
-    }
-  }, [data, error]);
-
-  useEffect(() => {
-    setLodingGlobal(loading);
-  }, [loading]);
-
+  useEffect(()=>{
+    if(festivals.length)
+    console.log(typeof festivals[0].festival_date_time);
+    const festivalsAndFeatures = festivals.map(
+            (f: FestivalBack) => {
+              const [lon, lat] = f.festival_location;
+              return {
+                festival: f,
+                feature: new Feature({
+                  geometry: new Point(fromLonLat([lon, lat])),
+                  name: f.festival_name,
+                }),
+              };
+            }
+          );
+          setFeatures(festivalsAndFeatures);
+    setLoading(false);
+  },[festivals])
+  
   return (
     // <div className="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl">
     <div className="relative flex flex-wrap w-full items-center overflow-hidden bg-white px-4 sm:px-6 sm:pt-8 md:p-6 lg:p-8">
@@ -76,7 +68,7 @@ export default function FoodFestivals() {
           </h2>
 
           <section aria-labelledby="options-heading" className="mt-10">
-            <FestivalTable festivals={festivals} />
+            {!loading && <FestivalTable festivals={festivals} />}
           </section>
           <AddFestivalModal />
         </div>

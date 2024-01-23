@@ -6,9 +6,9 @@ import RecipesById from './components/recipes/RecipeById';
 import RecipesByCreator from './components/recipes/RecipesByCreator';
 import PersonalRecipe from './components/PersonalArea/PersonalRecipe';
 import ShowDetails from './components/PersonalArea/ShowDetails';
-import PersonalArea from './components/PersonalArea/PersonalArea';
+// import PersonalArea from './components/PersonalArea/PersonalArea';
 import GetUsers from './components/AdminArea/GetUsers';
-import AdminArea from './components/AdminArea/AdminArea';
+// import AdminArea from './components/AdminArea/AdminArea';
 import AddRecipe from './components/recipes/AddREcipe';
 import FavoriteRecipes from './components/PersonalArea/FavriteRecipes';
 import EditRecipe from './components/PersonalArea/EditRecipe';
@@ -28,8 +28,8 @@ const Router = () => {
           <Route path="recipes" element={<AllRecipes />} />
           <Route path="recipe/:id" element={<RecipesById />} />
           <Route path="recipes/creator/:id" element={<RecipesByCreator />} />
-          <Route path="adminArea" element={<AdminArea />} />
-          <Route path="personalArea/:id" element={<PersonalArea />} />
+          {/* <Route path="adminArea" element={<AdminArea />} /> */}
+          {/* <Route path="personalArea/:id" element={<PersonalArea />} /> */}
           <Route path="personalRecipe/:id" element={<PersonalRecipe />} />
           <Route path="editRecipe/:id" element={<EditRecipe />} />
           <Route path="favoriteRecipes/:id" element={<FavoriteRecipes />} />

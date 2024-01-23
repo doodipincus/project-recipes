@@ -2,122 +2,35 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { allRecipesAtom } from '../../utils/atoms';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
-import { Recipes } from '../../interfaces/recipes';
+import { RecipeBack, Recipes } from '../../interfaces/recipes';
 import { formatDateTime } from '../../utils/date';
-// import Map from '../maps/borderMapBing';
-
-// export default function RecipesById() {
-//   const { id } = useParams();
-//   const [allRecipes] = useAtom(allRecipesAtom);
-//   const [recipe, setRecipe] = useState<Recipes | undefined>();
-//   const navigate = useNavigate();
-//   useEffect(() => {
-//     if (id) {
-//       console.log(allRecipes);
-
-//       const newRecipe = allRecipes.find((r) => r.recipeId === id);
-//       console.log(newRecipe);
-//       setRecipe(newRecipe);
-//     }
-//   }, []);
-
-//   return recipe ? (
-//     <div className="flex">
-//       {/* <Map country={recipe.countyOfOrigin} /> */}
-//       <article
-//         key={recipe.recipeId}
-//         className="flex max-w-xl flex-col items-start justify-between"
-//       >
-//         <div>
-//           <img src={recipe.creatorImage} alt="תמונה של המתכון" />
-//         </div>
-
-//         <div className="group relative">
-//           <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
-//             {/* <a href={recipe.href}> */}
-//             <span className="absolute inset-0" />
-//             {recipe.title}
-//             {/* </a> */}
-//           </h3>
-//           <p className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600">
-//             {recipe.category}
-//           </p>
-//         </div>
-//         <div className="relative mt-8 flex items-center gap-x-4">
-//           <div onClick={() => navigate(`/recipes/creator/${recipe.recipeId}`)}>
-//             <img
-//               src={recipe.creatorImage}
-//               alt=""
-//               className="h-10 w-10 rounded-full bg-gray-50"
-//             />
-//             <div className="text-sm leading-6">
-//               <p className="font-semibold text-gray-900">
-//                 <span className="absolute inset-0" />
-//                 {recipe.creatorName}
-//               </p>
-//             </div>
-//           </div>
-//           <div className="flex items-center gap-x-4 text-xs">
-//             <time dateTime={recipe.createdAt} className="text-gray-500">
-//               {formatDateTime(recipe.createdAt)}
-//             </time>
-//             <p className="font-semibold text-">נוצר ב </p>
-//           </div>
-//         </div>
-//       </article>
-//     </div>
-//   ) : (
-//     <div>אין כזה מתכון</div>
-//   );
-// }
-
 import { StarIcon } from '@heroicons/react/20/solid';
+import { classNames } from '../../css/classes';
 
 const product = {
-  name: 'Basic Tee 6-Pack',
   price: '$192',
-  href: '#',
-  breadcrumbs: [
-    { id: 1, name: 'Men', href: '#' },
-    { id: 2, name: 'Clothing', href: '#' },
-  ],
-  images: [
-    {
-      src: 'https://tailwindui.com/img/ecommerce-images/product-page-02-secondary-product-shot.jpg',
-      alt: 'Two each of gray, white, and black shirts laying flat.',
-    },
-  ],
-  description:
-    'The Basic Tee 6-Pack allows you to fully express your vibrant personality with three grayscale options. Feeling adventurous? Put on a heather gray tee. Want to be a trendsetter? Try our exclusive colorway: "Black". Need to add an extra pop of color to your outfit? Our white tee has you covered.',
-  highlights: [
-    'Hand cut and sewn locally',
-    'Dyed with our proprietary colors',
-    'Pre-washed & pre-shrunk',
-    'Ultra-soft 100% cotton',
-  ],
-  details:
-    'The 6-Pack includes two black, two white, and two heather gray Basic Tees. Sign up for our subscription service and be the first to get new, exciting colors, like our upcoming "Charcoal Gray" limited release.',
 };
+
 const reviews = { href: '#', average: 4, totalCount: 117 };
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
+
 
 export default function Example() {
   const { id } = useParams();
   const [allRecipes] = useAtom(allRecipesAtom);
-  const [recipe, setRecipe] = useState<Recipes | undefined>();
+  const [recipe, setRecipe] = useState<RecipeBack | undefined>();
   const navigate = useNavigate();
+
+  
   useEffect(() => {
     if (id) {
       console.log(allRecipes);
-
-      const newRecipe = allRecipes.find((r) => r.recipeId === id);
+      const newRecipe = allRecipes.find((r) => r.recipe_id === id);
       console.log(newRecipe);
       setRecipe(newRecipe);
     }
   }, []);
+
 
   return (
     <div className="bg-white">
@@ -204,18 +117,18 @@ export default function Example() {
               <div className="relative mt-8 flex items-center gap-x-4">
                 <div
                   onClick={() =>
-                    navigate(`/recipes/creator/${recipe?.recipeId}`)
+                    navigate(`/recipes/creator/${recipe?.creator_email}`)
                   }
                 >
                   <img
-                    src={recipe?.creatorImage}
+                    src="kj"
                     alt=""
                     className="h-10 w-10 rounded-full bg-gray-50"
                   />
                   <div className="text-sm leading-6">
                     <p className="font-semibold text-gray-900">
                       <span className="absolute inset-0" />
-                      {recipe?.creatorName}
+                      {recipe?.creator_name}
                     </p>
                   </div>
                 </div>

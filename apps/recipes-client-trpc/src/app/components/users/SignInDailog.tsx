@@ -1,7 +1,6 @@
-import { trpc } from '../../utils/trpc';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   userIsLoggedInAtom,
   signInAtom,
@@ -9,15 +8,20 @@ import {
   modalRegisterAtom,
   lodingAtom,
 } from '../../utils/atoms';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import AlertSecces from '../../utils/AlertSecces';
 
 const SignInDailog = () => {
   const [signIn, setSignIn] = useAtom(signInAtom);
   const setRegisterModal = useSetAtom(modalRegisterAtom);
   const setUserIsLoggedIn = useSetAtom(userIsLoggedInAtom);
-  const setUser = useSetAtom(userAtom);
   const [checkboks, setCheckboxes] = useState(true);
   const setLoding = useSetAtom(lodingAtom);
+  
+  // const setUser = useSetAtom(userAtom);
+  const [user, setUser] = useAtom(userAtom);
+
 
   const notify = () => {
     toast.success('!התחברת בהצלחה', {
@@ -25,27 +29,43 @@ const SignInDailog = () => {
     });
   };
 
-  const send = async () => {
-    console.log('sebd ');
-
-    if (signIn.email && signIn.password) {
-      setLoding(true);
-      const res = await trpc.signIn.query(signIn);
-      if (res && typeof res !== 'string') {
-        console.log(typeof res);
-        console.log(res);
-        setLoding(false);
-
-        notify();
-        setUserIsLoggedIn(true);
-        setUser(res);
-        if (checkboks) {
-          localStorage.setItem('email', res.email);
-          localStorage.setItem('password', res.password);
+  const SIGN_IN = gql`
+    mutation MyMutation($input: LoginInput!) {
+      login(input: $input) {
+        loginRespon {
+          jwtToken
+          userDetails
         }
       }
     }
+  `;
+
+  const [signInToServer, { error, data }] = useMutation(SIGN_IN);
+
+  const send = () => {
+    if (signIn.email && signIn.password) {
+      setLoding(true);
+      signInToServer({ variables: { input: signIn } });
+    }
   };
+
+  useEffect(() => {
+    if (data && data.login.loginRespon) {
+      setLoding(false);
+      notify();
+      setUserIsLoggedIn(true);
+      setUser(data.login.loginRespon.userDetails);
+      localStorage.setItem('TOKEN', data.login.loginRespon.jwtToken);
+      // if (checkboks) {
+      //   localStorage.setItem('email', data.login.loginRespon.userDetails.email);
+      //   localStorage.setItem('password', data.login.loginRespon.userDetails.password);
+      // }
+    }
+    if (error) {
+      setLoding(false);
+      console.error(error);
+    }
+  }, [data, error]);
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -53,7 +73,10 @@ const SignInDailog = () => {
         <div className="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
           <div className="flex items-center justify-center w-full lg:p-12">
             <div className="flex items-center xl:p-10">
-              <form className="flex flex-col w-full h-full pb-6 text-center bg-white rounded-3xl" onSubmit={send}>
+              <form
+                className="flex flex-col w-full h-full pb-6 text-center bg-white rounded-3xl"
+                onSubmit={send}
+              >
                 <h3 className="mb-3 text-4xl font-extrabold text-dark-grey-900">
                   התחבר
                 </h3>
@@ -129,8 +152,7 @@ const SignInDailog = () => {
                   </button>
                 </div>
                 <button
-                type='submit'
-                
+                  type="submit"
                   onClick={send}
                   className="cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"
                 >
@@ -150,18 +172,7 @@ const SignInDailog = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <AlertSecces />
     </body>
   );
 };

@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Recipes } from '../../interfaces/recipes';
 import MenuCountries from './MenuCountries';
 import { Switch } from '@headlessui/react';
-import { Prop } from '../../interfaces/props';
+import { PropsInput } from '../../interfaces/props';
 import Inputs from './InputsForProducts';
 import { classNames } from '../../css/classes';
 
-
-const FormRecipe = ({ props }: Prop) => {
+const FormRecipe = ({ props }: PropsInput) => {
   const [shareWithEveryone, setShareWithEveryone] = useState<boolean>(true);
 
   const { recipe, setRecipe } = props;
@@ -21,7 +20,7 @@ const FormRecipe = ({ props }: Prop) => {
   };
 
   return (
-    <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
+    <div className="isolate bg-white px-6   sm:py-10 lg:px-8">
       <div
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
         aria-hidden="true"
@@ -96,12 +95,12 @@ const FormRecipe = ({ props }: Prop) => {
             <div className="mt-2.5">
               <input
                 type="text"
-                name="preparationTime"
+                name="preparation_time"
                 id="preparationTime"
                 autoComplete="family-name"
                 className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 onChange={(e) => hendalChange(e)}
-                value={recipe.preparationTime}
+                value={recipe.preparation_time}
               />
             </div>
           </div>
@@ -145,7 +144,7 @@ const FormRecipe = ({ props }: Prop) => {
               />
             </div>
           </div>
-          <Inputs props={{recipe, setRecipe}} />
+          <Inputs props={{ recipe, setRecipe }} />
           <div>
             <label
               htmlFor="sensitivity"
@@ -189,7 +188,7 @@ const FormRecipe = ({ props }: Prop) => {
           </div>
           <div>
             <label
-              htmlFor="county_of_origin"
+              htmlFor="counrty_of_origin"
               className="block text-sm font-semibold leading-6 text-gray-900"
             >
               ארץ מוצא
@@ -224,7 +223,6 @@ const FormRecipe = ({ props }: Prop) => {
             </Switch.Label>
           </Switch.Group>
         </div>
-
       </form>
     </div>
   );

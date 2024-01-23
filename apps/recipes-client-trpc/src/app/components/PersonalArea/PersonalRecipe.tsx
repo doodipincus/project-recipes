@@ -1,71 +1,64 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { Recipes } from '../../interfaces/recipes';
+import { RecipeBack, Recipes } from '../../interfaces/recipes';
 import CardRecipe from '../recipes/CardRecipe';
 import { lodingAtom, userAtom } from '../../utils/atoms';
 import { useAtom, useSetAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
-import { DELETE_RECIPE } from '../../mutations/deleteResipe';
 import Skeleton from '../loading/Skeleton';
 import Title from '../recipes/Title';
 import { classNames } from '../../css/classes';
-import { RECIPES_BY_CREATOR } from '../../mutations/recipeByCreator';
+import { trpc } from '../../utils/trpc';
+import { toast } from 'react-toastify';
+import AlertSecces from '../../utils/AlertSecces';
 
 const PersonalRecipe = () => {
-  const [personalRecipe, setPersonalRecipe] = useState<Recipes[]>([]);
+  const [personalRecipe, setPersonalRecipe] = useState<RecipeBack[]>([]);
   const [user] = useAtom(userAtom);
   const navigate = useNavigate();
-  const setLodingGlobal = useSetAtom(lodingAtom);
+  const [loading, setLoading] = useAtom(lodingAtom);
 
-  const { data, error, loading } = useQuery(RECIPES_BY_CREATOR, {
-    variables: { email: user.email },
-  });
-
-  const [
-    deleteResipe,
-    { data: dataDelete, error: errorDelete, loading: loadingDelete },
-  ] = useMutation(DELETE_RECIPE);
-
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-      setPersonalRecipe(data.userByEmail.recipesByCreatorEmail.nodes);
-    }
-    if (error) console.log(error);
-  }, [data, error]);
-
-  useEffect(() => {
-    if (dataDelete) {
-      console.log('dataDelete', dataDelete);
-      setPersonalRecipe(
-        dataDelete.deleteRecipeByRecipeId.query.userByEmail
-          .recipesByCreatorEmail.nodes
-      );
-    }
-    if (errorDelete) console.log(errorDelete);
-  }, [dataDelete, errorDelete]);
-
-  console.log(personalRecipe);
-
-  const handleDelete = async (id: string) => {
-    deleteResipe({
-      variables: {
-        input: {
-          clientMutationId: user.email,
-          recipeId: id,
-        },
-        email: user.email,
-      },
+  const notifyRemove = () => {
+    toast.success('המתכון נמחק בהצלחה!', {
+      theme: 'colored',
     });
   };
 
-  useEffect(() => {
-    setLodingGlobal(loading);
-  }, [loading]);
+  const deleteRecipe = async (id: string) => {
+    try {
+      setLoading(true);
+      const renove = await trpc.recipes.deleteRecipe.mutate(id);
+      if (renove && typeof renove !== 'string') {
+        console.log(renove);
+        setLoading(false);
+        notifyRemove();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getRecipesByCreator = async () => {
+    try {
+      if (user.email) {
+        setLoading(true);
+        const resipes = await trpc.recipes.getRecipesByCreator.query(
+          user.email
+        );
+        if (resipes?.length && typeof resipes !== 'string') {
+          console.log(resipes);
+          setPersonalRecipe(resipes);
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    setLodingGlobal(loadingDelete);
-  }, [loadingDelete]);
+    getRecipesByCreator();
+  }, []);
 
   return (
     <div className="bg-white py-24 sm:py-32 flex">
@@ -87,7 +80,7 @@ const PersonalRecipe = () => {
                         'text-gray-300 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
-                      onClick={() => handleDelete(recipe.recipeId)}
+                      onClick={() => deleteRecipe(recipe.recipe_id)}
                     >
                       מחק מתכון
                     </button>
@@ -96,7 +89,9 @@ const PersonalRecipe = () => {
                         'text-gray-300 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
-                      onClick={() => navigate(`/editRecipe/${recipe.recipeId}`)}
+                      onClick={() =>
+                        navigate(`/editRecipe/${recipe.recipe_id}`)
+                      }
                     >
                       ערוך מתכון
                     </button>
@@ -106,6 +101,7 @@ const PersonalRecipe = () => {
           </div>
         )}
       </div>
+<AlertSecces/>
     </div>
   );
 };

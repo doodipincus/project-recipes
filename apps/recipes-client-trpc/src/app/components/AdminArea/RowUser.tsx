@@ -1,9 +1,37 @@
-import { Users } from "../../interfaces/users";
-import { formatDateTime } from "../../utils/date"
+import { useSetAtom } from 'jotai';
+import { classNames } from '../../css/classes';
+import { Users } from '../../interfaces/users';
+import { formatDateTime } from '../../utils/date';
+import { trpc } from '../../utils/trpc';
+import { lodingAtom } from '../../utils/atoms';
+import { toast } from 'react-toastify';
+import AlertSecces from '../../utils/AlertSecces';
 
-const RowUser = ({ user}:{user:Users}) =>{
-    return (
-        <tr className="border-b border-dashed last:border-b-0">
+const RowUser = ({ user }: { user: Users }) => {
+  const setLodingGlobal = useSetAtom(lodingAtom);
+
+  const notify = () => {
+    toast.success('!המשתמש נמחק', {
+      theme: 'colored',
+    });
+  };
+  const send = async () => {
+    try {
+      setLodingGlobal(true);
+      const res = await trpc.users.deleteUser.mutate(user.email);
+      if (res && typeof res !== 'string') {
+        setLodingGlobal(false);
+        console.log(res);
+        notify();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <>
+      <tr className="border-b border-dashed last:border-b-0">
         <td className="p-3 pl-0">
           <div className="flex items-center">
             <div className="relative inline-block shrink-0 rounded-2xl me-3">
@@ -42,7 +70,7 @@ const RowUser = ({ user}:{user:Users}) =>{
         </td>
         <td className="pr-0 text-start">
           <span className="font-semibold text-light-inverse text-md/normal">
-            {formatDateTime(user.createdAt ? user.createdAt: new Date())}
+            {formatDateTime(user.createdAt ? user.createdAt : new Date())}
           </span>
         </td>
         <td className="p-3 pr-0 text-end">
@@ -52,7 +80,7 @@ const RowUser = ({ user}:{user:Users}) =>{
         </td>
         <td className="pr-0 text-start">
           <span className="font-semibold text-light-inverse text-md/normal">
-            {formatDateTime(user.updatedAt ? user.updatedAt: new Date())}
+            {formatDateTime(user.updatedAt ? user.updatedAt : new Date())}
           </span>
         </td>
         <td className="pr-0 text-start">
@@ -60,7 +88,20 @@ const RowUser = ({ user}:{user:Users}) =>{
             {user.user_id}
           </span>
         </td>
+        <td className="pr-0 text-start">
+          <button
+            className={classNames(
+              'text-gray-300 hover:bg-gray-700 hover:text-white',
+              'block rounded-md px-3 py-2 text-base font-medium'
+            )}
+            onClick={send}
+          >
+            מחק משתמש
+          </button>
+        </td>
       </tr>
-    )
-}
+      <AlertSecces />
+    </>
+  );
+};
 export default RowUser;

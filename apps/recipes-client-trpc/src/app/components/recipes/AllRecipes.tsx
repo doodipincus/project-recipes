@@ -1,52 +1,45 @@
-import { gql, useQuery } from '@apollo/client';
 import { useEffect } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
-import { allRecipesAtom, lodingAtom } from '../../utils/atoms';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { allRecipesAtom, lodingAtom, userAtom } from '../../utils/atoms';
 import CardRecipe from './CardRecipe';
 import Skeleton from '../loading/Skeleton';
 import Loading from '../loading/Loading';
-import { useNavigate } from 'react-router-dom';
 import Title from './Title';
+import { trpc } from '../../utils/trpc';
 
 export default function AllRecipes() {
   const [allRecipes, setAllRecipes] = useAtom(allRecipesAtom);
-const setLodingGlobal = useSetAtom(lodingAtom)
+  const [loading, setLoading] = useAtom(lodingAtom);
+  const user = useAtomValue(userAtom);
 
-  const GET_ALL_RECIPES = gql`
-    query MyQuery {
-      allRecipes {
-        nodes {
-          category
-          countyOfOrigin
-          createdAt
-          creatorEmail
-          creatorImage
-          creatorName
-          image
-          title
-          recipeId
-          sensitivity
-          rating
-          preparationTime
-          ingredients
-          instructions
-          difficulty
-        }
+  const getRecipes = async () => {
+    try {
+      setLoading(true);
+      const resipes = await trpc.recipes.getRecipes.query();
+      if (resipes?.length && typeof resipes !== 'string') {
+        console.log(resipes);
+        setAllRecipes(resipes);
+        setLoading(false);
       }
+    } catch (error) {
+      console.error(error);
     }
-  `;
-  const { data, loading } = useQuery(GET_ALL_RECIPES);
+  };
 
   useEffect(() => {
-    if (data) {
-      console.log(data.allRecipes.nodes);
-      setAllRecipes(data.allRecipes.nodes);
-    }
-  }, [data]);
+    getRecipes();
+  }, []);
 
-  useEffect(()=>{
-    setLodingGlobal(loading)
-  },[loading])
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
+
+  useEffect(() => {
+    if(allRecipes.length)
+    console.log(typeof allRecipes[0].createdAt);
+  }, [allRecipes]);
+
 
   return (
     <div className="bg-white py-24 sm:py-32 flex">

@@ -79,13 +79,13 @@ const MenuProfile = () => {
                 <MenuList>
                   <MenuItem
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                    onClick={() => navigate(`/favoriteRecipes/${user.user_id}`)}
+                    onClick={() => navigate(`/favoriteRecipes/${user.userId}`)}
                   >
                     מתכונים שאהבת
                   </MenuItem>
                   <MenuItem
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                    onClick={() => navigate(`/personalRecipe/${user.user_id}`)}
+                    onClick={() => navigate(`/personalRecipe/${user.userId}`)}
                   >
                     מתכונים ששיתפת
                   </MenuItem>
@@ -93,7 +93,7 @@ const MenuProfile = () => {
               </Menu>
             </MenuItem>
             <MenuItem
-              onClick={() => navigate(`/showDetails/${user.user_id}`)}
+              onClick={() => navigate(`/showDetails/${user.userId}`)}
               className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
             >
               <h3 className="pl-1 text-sm flex items-center py-2 mb-2 transition duration-200 ease-in">

@@ -12,15 +12,15 @@ export const automaticSignIn = async () => {
     console.log(email)
     console.log(password);
 
-    if (email && password) {
-        const res = await trpc.signIn.query({ email, password });
-        if (res && typeof res !== 'string') {
-            console.log(typeof res);
-            console.log(res);
-;
+//     if (email && password) {
+//         const res = await trpc.users.signIn.query({ email, password });
+//         if (res && typeof res !== 'string') {
+//             console.log(typeof res);
+//             console.log(res);
+// ;
 
-            setUserIsLoggedIn(true);
-            setUser(res);
-        }
-    }
+//             setUserIsLoggedIn(true);
+//             setUser(res);
+//         }
+//     }
 }

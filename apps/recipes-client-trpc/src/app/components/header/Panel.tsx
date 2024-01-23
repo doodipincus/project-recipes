@@ -112,7 +112,7 @@ const Panel = () => {
             </div>
             <div className="ml-3">
               <div className="text-base font-medium leading-none text-white">
-                {user.user_name}
+                {user.userName}
               </div>
               <div className="text-sm font-medium leading-none text-gray-400">
                 {user.email}
@@ -154,13 +154,13 @@ const Panel = () => {
                 <MenuList>
                   <MenuItem
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                    onClick={() => navigate(`/favoriteRecipes/${user.user_id}`)}
+                    onClick={() => navigate(`/favoriteRecipes/${user.userId}`)}
                   >
                     מתכונים שאהבת
                   </MenuItem>
                   <MenuItem
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                    onClick={() => navigate(`/personalRecipe/${user.user_id}`)}
+                    onClick={() => navigate(`/personalRecipe/${user.userId}`)}
                   >
                     מתכונים ששיתפת
                   </MenuItem>
@@ -170,7 +170,7 @@ const Panel = () => {
             <Disclosure.Button
               // key={}
               as="button"
-              onClick={() => navigate(`/showDetails/${user.user_id}`)}
+              onClick={() => navigate(`/showDetails/${user.userId}`)}
               className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
             >
               פרופיל

@@ -4,7 +4,7 @@ import { sequelize } from './seqPG';
 import { Model } from 'sequelize';
 
 
-interface UserAttributes {
+export interface UserAttributes {
   email: string;
   password: string;
   user_name: string;
@@ -24,7 +24,7 @@ interface UserBack extends UserInstance, UserAttributes { }
 
 
 export const User = sequelize.define<Model<UserBack, UserAttributes>>(
-  'Users',
+  'users',
   {
     user_id: {
       type: DataTypes.UUID,
@@ -64,6 +64,7 @@ export const User = sequelize.define<Model<UserBack, UserAttributes>>(
   },
   {
     tableName: 'users',
+    schema: 'recipes_schema',
     timestamps: true,
     createdAt: true,
     updatedAt: true,

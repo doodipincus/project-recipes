@@ -1,10 +1,12 @@
-import { Festivals } from '../../interfaces/festivals';
+import { FestivalBack } from '../../interfaces/festivals';
 import { formatDateTime } from '../../utils/date';
 
 interface Props {
-  festivals: Festivals[];
+  festivals: FestivalBack[];
 }
 const FestivalTable = ({ festivals }: Props) => {
+  console.log('table', festivals);
+  
   return (
     <div className="flex flex-col">
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -40,16 +42,16 @@ const FestivalTable = ({ festivals }: Props) => {
                       {index + 1}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {festival.festivalName}
+                      {festival.festival_name}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {formatDateTime(festival.festivalDateTime)}
+                      {formatDateTime(festival.festival_date_time)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {festival.festivalDescription}
+                      {festival.festival_description}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {festival.festivalCreatorEmail}
+                      {festival.festival_creator_email}
                     </td>
                   </tr>
                 ))}

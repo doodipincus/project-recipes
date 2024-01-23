@@ -49,11 +49,11 @@ export default function MapFoodFestival({
             <RPopup trigger="hover" positioning="bottom-center">
               {
                 <div style={{ backgroundColor: 'white' }}>
-                  <p>{f.festival.festivalName}</p>
-                  <p>{f.festival.festivalDescription}</p>
-                  <p>{f.festival.festivalCreatorName}</p>
-                  <p>{f.festival.festivalCreatorEmail}</p>
-                  <p>{formatDateTime(f.festival.festivalDateTime)}</p>
+                  <p>{f.festival.festival_name}</p>
+                  <p>{f.festival.festival_description}</p>
+                  <p>{f.festival.festival_creator_name}</p>
+                  <p>{f.festival.festival_creator_email}</p>
+                  <p>{formatDateTime(f.festival.festival_date_time)}</p>
                 </div>
               }
             </RPopup>

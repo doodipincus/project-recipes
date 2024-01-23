@@ -3,10 +3,12 @@ import RegisterDailog from './RegisterDailog';
 import { classNames } from '../../css/classes';
 import { useAtom } from 'jotai';
 import { modalRegisterAtom } from '../../utils/atoms';
+import { useState } from 'react';
 
 
 export default function RegisterModal() {
-  const [open, setOpen] = useAtom(modalRegisterAtom);
+  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useAtom(modalRegisterAtom);
   console.log(open);
   console.log(localStorage.getItem('email'));
   console.log(localStorage.getItem('password'));
@@ -29,7 +31,6 @@ export default function RegisterModal() {
         size="xs"
         open={open}
         handler={handleOpen}
-        // handler={()=>{}}
         className="bg-transparent shadow-none"
       >
         <RegisterDailog />

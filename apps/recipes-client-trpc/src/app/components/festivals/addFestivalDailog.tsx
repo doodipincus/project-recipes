@@ -1,57 +1,52 @@
-import { gql, useMutation } from '@apollo/client';
-import { newFestivalAtom, userAtom } from '../../utils/atoms';
-import { useAtom } from 'jotai';
+import { lodingAtom, newFestivalAtom, userAtom } from '../../utils/atoms';
+import { useAtom, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import MapAddFestival from './MapAddFestival';
+import { trpc } from '../../utils/trpc';
+import AlertSecces from '../../utils/AlertSecces';
 
 const AddFestivalDailog = () => {
   const [newFestival, setNewFestival] = useAtom(newFestivalAtom);
   const [user] = useAtom(userAtom);
+  const setLodingGlobal = useSetAtom(lodingAtom);
 
-  const ADD_FESTIVAL = gql`
-    mutation MyMutation($input: CreateFestivalInput!) {
-      createFestival(input: $input) {
-        festival {
-          festivalCreatorEmail
-          festivalCreatorImage
-          festivalCreatorName
-          festivalDateTime
-          festivalDescription
-          festivalId
-          festivalImage
-          festivalLocation
-          festivalName
-        }
+  const notify = () => {
+    toast.success('!הפסטיבל נוסף בהצלחה', {
+      theme: 'colored',
+    });
+  };
+  const addFestival = async () => {
+    console.log('festival', newFestival);
+    console.log('type', typeof newFestival.festivalDateTime);
+    console.log('date', newFestival.festivalDateTime);
+    console.log('add festival');
+    try {
+      if (newFestival.festivalLocation.length) {
+        setLodingGlobal(true);
+        const res = await trpc.festivals.addfestival.mutate(newFestival);
+        console.log(res);
+        setLodingGlobal(false);
+        notify();
       }
+    } catch (error) {
+      console.error(error);
     }
-  `;
-
-  const [addFestival, { error, data }] = useMutation(ADD_FESTIVAL);
+  };
 
   const addCrator = () => {
-    if (user.email && user.user_name) {
+    if (user.email && user.userName) {
       setNewFestival({
         ...newFestival,
-        festivalCreatorName: user.user_name,
+        festivalCreatorName: user.userName,
         festivalCreatorEmail: user.email,
+        // festivalDateTime: new Date()
       });
     }
   };
   useEffect(() => {
     addCrator();
   }, []);
-
-  const send = () => {
-    console.log(newFestival);
-    console.log(typeof newFestival.festivalDateTime);
-
-    addFestival({ variables: { input: { festival: newFestival } } });
-  };
-  useEffect(() => {
-    if (data) console.log(data);
-    if (error) console.log(error);
-  }, [data, error]);
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -98,7 +93,8 @@ const AddFestivalDailog = () => {
                       parsedDateAndTime.toISOString();
                     setNewFestival({
                       ...newFestival,
-                      festivalDateTime: new Date(formattedDateAndTime),
+                      // festivalDateTime: new Date(formattedDateAndTime),
+                      festivalDateTime: formattedDateAndTime,
                     });
                   }}
                 />
@@ -137,7 +133,7 @@ const AddFestivalDailog = () => {
                 />
 
                 <div
-                  onClick={send}
+                  onClick={addFestival}
                   className="cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"
                 >
                   שלח
@@ -148,18 +144,7 @@ const AddFestivalDailog = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <AlertSecces />
     </body>
   );
 };

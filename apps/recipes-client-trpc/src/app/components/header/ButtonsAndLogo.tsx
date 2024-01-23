@@ -42,7 +42,7 @@ const ButtonsAndLogo = () => {
           >
             לפסטיבלי אוכל
           </button>
-          {((user.likes && user.likes >= 30) || user.isAdmin) && (
+          {/* {((user.likes && user.likes >= 30) || user.isAdmin) && ( */}
             <button
               // key={item.name}
               onClick={() => navigate(`/addRecipe`)}
@@ -54,7 +54,7 @@ const ButtonsAndLogo = () => {
             >
               הוסף מתכון
             </button>
-          )}
+          {/* )} */}
           {user.isAdmin && (
             <Menu
               // placement="left-start"

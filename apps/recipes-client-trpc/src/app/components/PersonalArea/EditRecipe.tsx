@@ -2,78 +2,89 @@ import { useEffect, useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { allRecipesAtom, lodingAtom, userAtom } from '../../utils/atoms';
-import { Recipes } from '../../interfaces/recipes';
+import { RecipesInput, Recipes, RecipeBack } from '../../interfaces/recipes';
 import { useParams } from 'react-router-dom';
 import FormRecipe from '../recipes/FormRecipe';
+import { trpc } from '../../utils/trpc';
+import { toast } from 'react-toastify';
+import AlertSecces from '../../utils/AlertSecces';
+
+const initialState: RecipesInput = {
+  title: '',
+  category: '',
+  image: '',
+  creator_name: '',
+  creator_email: '',
+  sensitivity: '',
+  country_of_origin: '',
+  difficulty: '',
+  ingredients: ['lkjd', 'skjdhf'],
+  instructions: '',
+  preparation_time: '',
+};
 
 export default function EditRecipe() {
-
-  const [recipeEdited, setRecipeEdited] = useState<Partial<Recipes>>({});
+  const [recipeEdited, setRecipeEdited] = useState<RecipesInput>(initialState);
   const [allRecipes] = useAtom(allRecipesAtom);
+  const [loading, setLoading] = useAtom(lodingAtom);
   const { id } = useParams();
-  const setLodingGlobal = useSetAtom(lodingAtom);
 
+  const notifyEdit = () => {
+    toast.success('המתכון עודכן בהצלחה!', {
+      theme: 'colored',
+    });
+  };
   console.log(id);
 
-  const x = allRecipes.find((recipe: Recipes) => recipe.recipeId === id);
+  const recipeById = allRecipes.find(
+    (recipe: RecipeBack) => recipe.recipe_id === id
+  );
 
   useEffect(() => {
-    console.log(x);
+    console.log(recipeById);
+    setRecipeEdited(recipeById ?? initialState);
+  }, [recipeById]);
 
-    setRecipeEdited(x ?? {});
-  }, [x]);
-
-  const EDIT_RECIPE = gql`
-    mutation MyMutation($input: UpdateRecipeByRecipeIdInput!) {
-      updateRecipeByRecipeId(input: $input) {
-        clientMutationId
+  const editRecipe = async (newRecipeEdited: RecipesInput) => {
+    if (id) {
+      try {
+        setLoading(true);
+        const res = await trpc.recipes.updateRecipe.mutate({
+          id: id,
+          update: newRecipeEdited,
+        });
+        if (res && typeof res !== 'string') {
+          console.log(res);
+          setLoading(false);
+          notifyEdit();
+        }
+      } catch (error) {
+        console.error(error);
       }
     }
-  `;
-
-  const [editRecipe, { error, data, loading }] = useMutation(EDIT_RECIPE);
+  };
 
   const send = () => {
-    const allValuesDefined = Object.values(recipeEdited).every(
-      (value) => value !== undefined
-    );
-    if (recipeEdited && allValuesDefined) {
-      const newRecipeEdited: Recipes = {
-        recipeId: recipeEdited.recipeId || '',
+    if (recipeEdited) {
+      const newRecipeEdited: RecipesInput = {
         title: recipeEdited.title || '',
         ingredients: recipeEdited.ingredients || [],
-        creatorEmail: recipeEdited.creatorEmail || '',
-        creatorName: recipeEdited.creatorName || '',
+        creator_email: recipeEdited.creator_email || '',
+        creator_name: recipeEdited.creator_name || '',
         category: recipeEdited.category || '',
         image: recipeEdited.image || '',
-        preparationTime: recipeEdited.preparationTime || '',
-        countyOfOrigin: recipeEdited.countyOfOrigin || '',
-        creatorImage: recipeEdited.creatorImage || '',
+        preparation_time: recipeEdited.preparation_time || '',
+        country_of_origin: recipeEdited.country_of_origin || '',
         sensitivity: recipeEdited.sensitivity || '',
         difficulty: recipeEdited.difficulty || '',
         instructions: recipeEdited.instructions || '',
-        createdAt: recipeEdited.createdAt || '',
-        rating: recipeEdited.rating || 0,
       };
-
       console.log(recipeEdited);
-
-      editRecipe({
-        variables: { input: { recipePatch: newRecipeEdited, recipeId: id } },
-      });
+      editRecipe(newRecipeEdited);
     }
   };
 
   console.log(recipeEdited);
-
-  useEffect(() => {
-    if (data) console.log('data', data);
-    if (error) console.log('error', error);
-  }, [data, error]);
-
-  useEffect(() => {
-   setLodingGlobal(loading)
-  }, [loading]);
 
   return (
     <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
@@ -88,6 +99,7 @@ export default function EditRecipe() {
           שלח מתכון
         </div>
       </div>
+<AlertSecces/>
     </div>
-  ) 
+  );
 }

@@ -7,7 +7,7 @@ import {
   ApolloProvider,
   createHttpLink,
 } from '@apollo/client';
-import { automaticSignIn } from './utils/automaticSignIn';
+// import { automaticSignIn } from './utils/automaticSignIn';
 
 export default function App() {
   const [queryClient] = useState(() => new QueryClient());
@@ -20,10 +20,9 @@ export default function App() {
     link: httpLink,
     cache: new InMemoryCache(),
   });
-console.log('a');
 
-  automaticSignIn()
-console.log('b');
+  // automaticSignIn()
+
 
   return (
     <QueryClientProvider client={queryClient}>

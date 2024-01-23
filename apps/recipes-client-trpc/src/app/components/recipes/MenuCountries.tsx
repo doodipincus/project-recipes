@@ -3,22 +3,22 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { countries } from '../../utils/countries';
 import { Recipes } from '../../interfaces/recipes';
-import { Prop } from '../../interfaces/props';
+import { PropsInput, Props } from '../../interfaces/props';
 import { classNames } from '../../css/classes';
 
-
-export default function MenuCountries({ props } : Prop) {
+export default function MenuCountries({ props }: PropsInput) {
   const [selected, setSelected] = useState(countries[3]);
 
-  const {recipe, setRecipe} = props;
+  const { recipe, setRecipe } = props;
   return (
-    <Listbox value={selected} onChange={(e)=>{
-      console.log('change');
-      setSelected(e)
-      setRecipe({...recipe, countyOfOrigin: e.name})
-
-    }}
-      >
+    <Listbox
+      value={selected}
+      onChange={(country) => {
+        console.log('change');
+        setSelected(country);
+        setRecipe({ ...recipe, country_of_origin: country.name });
+      }}
+    >
       {({ open }) => (
         <>
           {/* <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Assigned to</Listbox.Label> */}
@@ -31,10 +31,6 @@ export default function MenuCountries({ props } : Prop) {
                 <ChevronUpDownIcon
                   className="h-5 w-5 text-gray-400"
                   aria-hidden="true"
-            // onChange={(e) => {
-            //   console.log('change');
-              
-            //   setNewRecipe(e.target.value)}}
                 />
               </span>
             </Listbox.Button>

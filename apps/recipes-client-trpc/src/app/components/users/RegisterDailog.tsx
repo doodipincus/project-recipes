@@ -1,5 +1,4 @@
-import { trpc } from '../../utils/trpc';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAtom, useSetAtom } from 'jotai';
 import {
@@ -8,7 +7,10 @@ import {
   registerAtom,
   lodingAtom,
 } from '../../utils/atoms';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import AlertSecces from '../../utils/AlertSecces';
+import { v4 as uuidv4 } from 'uuid';
 
 const RegisterDailog = () => {
   const [register, setRegister] = useAtom(registerAtom);
@@ -23,31 +25,70 @@ const RegisterDailog = () => {
     });
   };
 
+  const REGISTER = gql`
+    mutation MyMutation($input: CreateUserInput!) {
+      createUser(input: $input) {
+        user {
+          createdAt
+          email
+          isAdmin
+          likes
+          shared
+          updatedAt
+          userId
+          userName
+        }
+      }
+    }
+  `;
+
+  const [sendRegistertoServer, { data, error }] = useMutation(REGISTER);
+
   const send = async () => {
     console.log('sebd ');
 
     if (
       register.email &&
       register.password &&
-      register.user_name &&
-      register.password === register.confirm_password
+      register.userName &&
+      register.password === register.confirmPassword
     ) {
       setLoding(true);
-      const res = await trpc.register.mutate(register);
-      if (res && typeof res !== 'string') {
-        console.log(typeof res);
-        console.log(res);
-        setLoding(false);
-        setUserIsLoggedIn(true);
-        setUser(res);
-        notify();
-        if (checkboks) {
-          localStorage.setItem('userName', res.user_name);
-          localStorage.setItem('password', res.password);
-        }
-      }
+      sendRegistertoServer({
+        variables: {
+          input: {
+            user: {
+              userId: uuidv4(),
+              userName: register.userName,
+              email: register.email,
+              password: register.password,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          },
+        },
+      });
     }
   };
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+      console.log(data.createUser.user);
+      setLoding(false);
+      setUserIsLoggedIn(true);
+      setUser(data.createUser.user);
+      notify();
+      // if (checkboks) {
+      //   localStorage.setItem('userName', res.user_name);
+      //   localStorage.setItem('password', res.password);
+      // }
+    }
+    if (error) {
+      console.log(error);
+      setLoding(false);
+    }
+  }, [data, error]);
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -86,9 +127,9 @@ const RegisterDailog = () => {
                   type="user_name"
                   placeholder="הכנס שם משתמש"
                   className="flex items-center w-full px-5 py-4 mr-2 text-sm font-medium outline-none focus:bg-grey-400 mb-7 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"
-                  value={register.user_name}
+                  value={register.userName}
                   onChange={(e) =>
-                    setRegister({ ...register, user_name: e.target.value })
+                    setRegister({ ...register, userName: e.target.value })
                   }
                 />
                 <label
@@ -134,11 +175,11 @@ const RegisterDailog = () => {
                   type="password"
                   placeholder="אמת את הסיסמא"
                   className="flex items-center w-full px-5 py-4 mb-5 mr-2 text-sm font-medium outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"
-                  value={register.confirm_password}
+                  value={register.confirmPassword}
                   onChange={(e) =>
                     setRegister({
                       ...register,
-                      confirm_password: e.target.value,
+                      confirmPassword: e.target.value,
                     })
                   }
                 />
@@ -174,18 +215,7 @@ const RegisterDailog = () => {
           </div>
         </div>
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <AlertSecces />
     </body>
   );
 };

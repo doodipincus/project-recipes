@@ -1,76 +1,85 @@
 import { useEffect, useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { lodingAtom, userAtom } from '../../utils/atoms';
-import { Recipes } from '../../interfaces/recipes';
+import { RecipesInput, Recipes } from '../../interfaces/recipes';
 import FormRecipe from './FormRecipe';
-import Loading from '../loading/Loading';
-
+import { trpc } from '../../utils/trpc';
+import { toast } from 'react-toastify';
+import AlertSecces from '../../utils/AlertSecces';
 
 export default function AddRecipe() {
   const [user] = useAtom(userAtom);
-  const [newRecipe, setNewRecipe] = useState<Partial<Recipes>>({});
-  const setLodingGlobal = useSetAtom(lodingAtom);
+  const [newRecipe, setNewRecipe] = useState<RecipesInput>({
+    title: '',
+    category: '',
+    image: '',
+    creator_name: '',
+    creator_email: '',
+    sensitivity: '',
+    country_of_origin: '',
+    difficulty: '',
+    ingredients: ['lkjd', 'skjdhf'],
+    instructions: '',
+    preparation_time: '',
+  });
+  const [loading, setLoading] = useAtom(lodingAtom);
 
-  
-  const ADD_RECIPE = gql`
-    mutation MyMutation($input: CreateRecipeInput!) {
-      createRecipe(input: $input) {
-        clientMutationId
-      }
-    }
-  `;
-
-  const [addRecipe, { error, data, loading }] = useMutation(ADD_RECIPE);
-
-  const addCrator = () => {
-    setNewRecipe({
-      ...newRecipe,
-      creatorName: user.user_name,
-      creatorEmail: user.email,
+  const notify = () => {
+    toast.success('הוספת את המתכון בהצלחה!', {
+      theme: 'colored',
     });
   };
-  console.log(newRecipe);
 
-  useEffect(() => {
-    addCrator();
-  }, []);
+  const addRecipe = async () => {
+    if (newRecipe.creator_email) {
+      try {
+        console.log('add', newRecipe);
+        setLoading(true);
+        const res = trpc.recipes.addRecipe.mutate(newRecipe);
+        if (res) {
+          console.log(res);
+          setLoading(false);
+          notify();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
-  useEffect(() => {
-    setLodingGlobal(loading)
-  }, [loading]);
-
-  
-  const send = () => {
-    console.log(newRecipe);
-    if (newRecipe.creatorEmail) {
-      addRecipe({
-        variables: {
-          input: {
-            clientMutationId: 'dudi',
-            recipe: newRecipe,
-          },
-        },
+  const addCrator = () => {
+    if (user.email && user.userName) {
+      setNewRecipe({
+        ...newRecipe,
+        creator_name: user.userName,
+        creator_email: user.email,
       });
     }
   };
 
   useEffect(() => {
-    if (data) console.log('data', data);
-    if (error) console.log('error', error);
-  }, [data, error]);
+    addCrator();
+  }, []);
+  const hasEmpty = Object.values(newRecipe).includes('');
+  console.log(hasEmpty);
 
   return (
     <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
       <FormRecipe props={{ recipe: newRecipe, setRecipe: setNewRecipe }} />
-      <div className="mx-auto mt-16 max-w-xl sm:mt-20">
-        <div
-          className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          onClick={send}
+      <div className="mx-auto max-w-xl ">
+        <button
+          className={
+            hasEmpty
+              ? 'block w-full rounded-md bg-gray-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+              : 'block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+          }
+          onClick={addRecipe}
+          disabled={hasEmpty}
         >
           שלח מתכון
-        </div>
+        </button>
       </div>
+<AlertSecces/>
     </div>
   );
 }
