@@ -1,79 +1,112 @@
 import FestivalTable from './FestivalsTable';
 import MapFoodFestival from './MapFoodFestival';
 import AddFestivalModal from './addFestivalModal';
-import { lodingAtom } from '../../utils/atoms';
+import { loadingAtom } from '../../utils/atoms';
 import { FestivalBack, festivalsAndFeatures } from '../../interfaces/festivals';
 import { useEffect, useState } from 'react';
 import { fromLonLat } from 'ol/proj';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import 'ol/ol.css';
-import { useAtom, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { trpc } from '../../utils/trpc';
-
+import CardFestival from './CardFestival';
 
 export default function FoodFestivals() {
   const [features, setFeatures] = useState<festivalsAndFeatures[]>([]);
   const [festivals, setFestivals] = useState<FestivalBack[]>([]);
-  const setLodingGlobal = useSetAtom(lodingAtom);
-  const [loading, setLoading] = useAtom(lodingAtom);
+  const setLoadingGlobal = useSetAtom(loadingAtom);
+  const [errorFromServer, setErrorFromServer] = useState<string>('');
 
+  const addFeatureIntoFestivals = (res: FestivalBack[]) => {
+    console.log('addFeatureIntoFest', res);
 
+    const festivalsAndFeatures = res.map((f: FestivalBack) => {
+      const [lon, lat] = f.festival_location;
+      return {
+        festival: f,
+        feature: new Feature({
+          geometry: new Point(fromLonLat([lon, lat])),
+          name: f.festival_name,
+        }),
+      };
+    });
+    setFeatures(festivalsAndFeatures);
+  };
 
-  const getFestivals = async () =>{
+  const getFestivals = async () => {
     try {
-      setLoading(true);
+      setLoadingGlobal(true);
       const res = await trpc.festivals.getFestivals.query();
       if (res?.length && typeof res !== 'string') {
-        console.log('festivals',res);
+        console.log('festivals', res);
         setFestivals(res);
+        setLoadingGlobal(false);
+        addFeatureIntoFestivals(res);
+      }
+      if (res && typeof res === 'string') {
+        setLoadingGlobal(false);
+        setErrorFromServer(res);
       }
     } catch (error) {
       console.error(error);
+      setLoadingGlobal(false);
     }
-  }
+  };
 
-  useEffect(()=>{
-    getFestivals()
-  },[])
+  const subscribeToRecipes = async () => {
+    try {
+      await trpc.festivals.onAdd.subscribe(undefined, {
+        onData: (data) => {
+          setFestivals((prev) => [...prev, data]);
+          // addFeatureIntoFestivals();
+          const [lon, lat] = data.festival_location;
+          setFeatures((prev) => [
+            ...prev,
+            {
+              festival: data,
+              feature: new Feature({
+                geometry: new Point(fromLonLat([lon, lat])),
+                name: data.festival_name,
+              }),
+            },
+          ]);
+        },
+        onError: (err) => {
+          console.error('Subscription error:', err);
+        },
+      });
+    } catch (err) {
+      console.error('Error subscribing to messages:', err);
+    }
+  };
 
-  useEffect(()=>{
-    if(festivals.length)
-    console.log(typeof festivals[0].festival_date_time);
-    const festivalsAndFeatures = festivals.map(
-            (f: FestivalBack) => {
-              const [lon, lat] = f.festival_location;
-              return {
-                festival: f,
-                feature: new Feature({
-                  geometry: new Point(fromLonLat([lon, lat])),
-                  name: f.festival_name,
-                }),
-              };
-            }
-          );
-          setFeatures(festivalsAndFeatures);
-    setLoading(false);
-  },[festivals])
-  
+  useEffect(() => {
+    if (!festivals.length) {
+      getFestivals();
+    }
+    subscribeToRecipes();
+  }, []);
+  useEffect(() => {
+    console.log('fes', festivals);
+    console.log('fua', features);
+  }, [festivals, features]);
+
   return (
-    // <div className="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl">
-    <div className="relative flex flex-wrap w-full items-center overflow-hidden bg-white px-4 sm:px-6 sm:pt-8 md:p-6 lg:p-8">
-      <MapFoodFestival features={features} />
-      <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
-        <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5"></div>
-        <div className="sm:col-span-8 lg:col-span-7">
-          <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">
-            כל הפסטיבלים
-          </h2>
+    <div className="flex flex-col lg:flex-row">
+      <div className="bg-gray-100 lg:w-1/3 lg:h-full">
+        <MapFoodFestival features={features} />
+      </div>
 
-          <section aria-labelledby="options-heading" className="mt-10">
-            {!loading && <FestivalTable festivals={festivals} />}
-          </section>
-          <AddFestivalModal />
+      <div className="w-full px-4 lg:w-2/3">
+        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {festivals.map((festival) => (
+            <CardFestival key={festival.festival_id} festival={festival} />
+          ))}
         </div>
+
+        <AddFestivalModal />
       </div>
     </div>
-    // </div>
   );
 }

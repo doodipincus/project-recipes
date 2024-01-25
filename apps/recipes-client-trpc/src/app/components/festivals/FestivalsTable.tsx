@@ -51,7 +51,7 @@ const FestivalTable = ({ festivals }: Props) => {
                       {festival.festival_description}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {festival.festival_creator_email}
+                      {festival.festival_creator_name}
                     </td>
                   </tr>
                 ))}

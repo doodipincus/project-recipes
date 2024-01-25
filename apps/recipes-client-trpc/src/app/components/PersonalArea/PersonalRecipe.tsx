@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { RecipeBack, Recipes } from '../../interfaces/recipes';
 import CardRecipe from '../recipes/CardRecipe';
-import { lodingAtom, userAtom } from '../../utils/atoms';
+import { loadingAtom, userAtom } from '../../utils/atoms';
 import { useAtom, useSetAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from '../loading/Skeleton';
@@ -16,7 +16,10 @@ const PersonalRecipe = () => {
   const [personalRecipe, setPersonalRecipe] = useState<RecipeBack[]>([]);
   const [user] = useAtom(userAtom);
   const navigate = useNavigate();
-  const [loading, setLoading] = useAtom(lodingAtom);
+  const [loading, setLoading] = useAtom(loadingAtom);
+  const [errorFromServer, setErrorFromServer] = useState<string>('') 
+
+
 
   const notifyRemove = () => {
     toast.success('המתכון נמחק בהצלחה!', {
@@ -27,14 +30,19 @@ const PersonalRecipe = () => {
   const deleteRecipe = async (id: string) => {
     try {
       setLoading(true);
-      const renove = await trpc.recipes.deleteRecipe.mutate(id);
-      if (renove && typeof renove !== 'string') {
-        console.log(renove);
+      const res = await trpc.recipes.deleteRecipe.mutate(id);
+      if (res && typeof res !== 'string') {
+        console.log(res);
         setLoading(false);
         notifyRemove();
       }
+      if(res && typeof res === 'string') {
+        setLoading(false);
+        setErrorFromServer(res);
+      }
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -63,7 +71,7 @@ const PersonalRecipe = () => {
   return (
     <div className="bg-white py-24 sm:py-32 flex">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <Title />
+        {/* <Title /> */}
         {loading ? (
           <div>
             <Skeleton />
@@ -101,7 +109,8 @@ const PersonalRecipe = () => {
           </div>
         )}
       </div>
-<AlertSecces/>
+      <AlertSecces />
+      {errorFromServer && <p>{errorFromServer}</p>}
     </div>
   );
 };

@@ -1,6 +1,11 @@
 import { AddRecipes, Recipes } from "../interface/interfacesRecipes";
 import { Recipe } from '../models/recipeModel';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { ee } from "../router/routerRecipes";
+import { Sequelize } from "sequelize";
+import { User } from "../models/userModel";
+import { sequelize } from "../models/seqPG";
+import { Favorite } from "../models/favoriteResipesModel";
 
 
 export const createRecipe = async (input: AddRecipes) => {
@@ -17,11 +22,14 @@ export const createRecipe = async (input: AddRecipes) => {
         instructions: input.instructions,
         preparation_time: input.preparation_time,
     });
-    if (create) return create.dataValues;
+    if (create) {
+        ee.emit('add', create);
+        return create.dataValues;
+    }
 };
 
 export const getRecipes = async () => {
-    const recipes = (await Recipe.findAll()).map((r) => {
+    const recipes = (await Recipe.findAll({ order: [['rating', 'DESC']] })).map((r) => {
         return r.dataValues;
     });
     console.log(recipes);
@@ -92,4 +100,72 @@ export const deleteRecipeDal = async (id: string, token: string) => {
         },
     });
     return true;
+};
+
+
+export const addRatingDal = async (id: string, email: string, user_name: string, newRating: number, comment:string) => {
+    const favorite = await Favorite.findOne({
+        where: {
+            recipe_id: id,
+            user_email: email,
+        },
+    })
+    if (!favorite) {
+        const [affectedRows] = await Recipe.update(
+            {
+                num_reviews: Sequelize.literal("num_reviews + 1"),
+                rating: Sequelize.literal(`(rating * num_reviews + ${newRating}) / ( num_reviews + 1)`),
+            },
+            {
+                where: {
+                    recipe_id: id,
+                },
+                returning: true,
+            }
+        );
+        if (affectedRows) {
+            await User.update(
+                {
+                    reviews: sequelize.literal("reviews + 1"),
+                },
+                {
+                    where: {
+                        email: email,
+                    }
+                }
+            )
+            await Favorite.create({
+                recipe_id: id,
+                user_email: email,
+                user_name: user_name,
+                stars: newRating,
+                comment: comment,
+            })
+        }
+        return true;
+    } else {
+        const [affectedRows] = await Recipe.update(
+            {
+                rating: Sequelize.literal(`(rating * num_reviews - ${favorite.dataValues.stars} + ${newRating}) / num_reviews`),
+            },
+            {
+                where: {
+                    recipe_id: id,
+                },
+                returning: true,
+            }
+        );
+        if (affectedRows) {
+            await Favorite.update({
+                stars: newRating,
+                comment: comment,
+            }, {
+                where: {
+                    recipe_id: id,
+                    user_email: email,
+                }
+            })
+        }
+        return true;
+    }
 };

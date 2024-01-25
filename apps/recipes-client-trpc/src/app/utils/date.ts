@@ -7,8 +7,8 @@ export function formatDateTime(timestamp: Date | string) {
     day: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    second: 'numeric',
-    hour12: true,
+    // second: 'numeric',
+    // hour12: true,
   };
 
   // יצירת מחרוזת המייצגת את התאריך והזמן בפורמט הרצוי

@@ -1,27 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
-
-
-
-export interface FestivalAttributes {
-    festival_id: string;
-    festival_name: string;
-    festival_description: string;
-    festival_date_time: Date;
-    festival_image: string;
-    festival_creator_name: string
-    festival_creator_email: string;
-    festival_location: number[];
-}
-
-interface FestivalInstance {
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-
-interface FestivalBack extends FestivalInstance, FestivalAttributes { }
+import { FestivalAttributes, FestivalBack } from '../interface/interfacesFestivals';
 
 
 

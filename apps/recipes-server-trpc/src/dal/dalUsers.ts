@@ -23,15 +23,15 @@ export const getUsers = async () => {
   return users;
 };
 
-// export const getUserByEmail = async (email: string) => {
-//   const user = await User.findOne({
-//     where: {
-//       email: email,
-//     },
-//   });
-//   if (user) return user.dataValues;
-//   // return user;
-// };
+export const getUserByEmail = async (email: string) => {
+  const user = await User.findOne({
+    where: {
+      email: email,
+    },
+  });
+  if (user) return user.dataValues;
+  // return user;
+};
 
 export const updateUserDal = async (email: string, update: Update, token: string) => {
   const tokenObj = jwt.verify(
@@ -44,7 +44,6 @@ export const updateUserDal = async (email: string, update: Update, token: string
       {
         user_name: update.user_name,
         email: update.email,
-        password: update.password,
       },
       {
         where: {
@@ -87,7 +86,7 @@ export const deleteUserDal = async (email: string, token: string) => {
 export const incrementLike = async (email: string) => {
   const [affectedRows] = await User.update(
     {
-      likes: Sequelize.literal('like + 1'),
+      reviews: Sequelize.literal('reviews + 1'),
     },
     {
       where: {

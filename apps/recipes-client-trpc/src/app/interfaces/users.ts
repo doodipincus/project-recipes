@@ -4,7 +4,7 @@ export interface Users {
     user_id: string;
     user_name: string;
     isAdmin: boolean;
-    likes: number;
+    reviews: number;
     shared: number;
     createdAt?: string | undefined;
     updatedAt?: string | undefined;

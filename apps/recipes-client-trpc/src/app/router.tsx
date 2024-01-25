@@ -16,6 +16,8 @@ import FoodFestivals from './components/festivals/FoodFestivals';
 import Graphs from './components/AdminArea/Graphs';
 import Layout from './components/Layout';
 import Redirect from './components/Redirect';
+import GetReviews from './components/AdminArea/GetReviews';
+import PersonalReviews from './components/PersonalArea/PersonalReveiws';
 
 const Router = () => {
   return (
@@ -33,8 +35,10 @@ const Router = () => {
           <Route path="personalRecipe/:id" element={<PersonalRecipe />} />
           <Route path="editRecipe/:id" element={<EditRecipe />} />
           <Route path="favoriteRecipes/:id" element={<FavoriteRecipes />} />
+          <Route path="personalReviews" element={<PersonalReviews/>} />
           <Route path="showDetails/:id" element={<ShowDetails />} />
           <Route path="allUsers" element={<GetUsers />} />
+          <Route path="allReviews" element={<GetReviews />} />
           <Route path="graphs" element={<Graphs />} />
           <Route path="addRecipe" element={<AddRecipe />} />
           {/* <Route path="test" element={<Test />} /> */}

@@ -8,7 +8,7 @@ export const serviceFestivals = {
         getAllFestivals: async () => {
             const festivals = await getFestivals();
             if (festivals) return festivals;
-            return 'recipes not found';
+            return 'אין פסטיבלים במאגר';
         },
         addFestival: async (festivalInput: FestivalsInput) => {
             const create = await createFestival(festivalInput);
@@ -17,7 +17,7 @@ export const serviceFestivals = {
         deleteFestival: async (id: string, token: string) => {
             const deleteFestival = await deleteFestivalDal(id, token);
             if (deleteFestival) return deleteFestival;
-            return 'recipe not found';
+            return 'פסטיבל לא נמצא';
         },
     }
 };

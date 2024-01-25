@@ -1,14 +1,14 @@
 import { Dialog } from '@material-tailwind/react';
 import { useAtomValue } from 'jotai';
-import { lodingAtom } from '../../utils/atoms';
+import { loadingAtom } from '../../utils/atoms';
 
 const Loading = () => {
-  const loding = useAtomValue(lodingAtom);
+  const loading = useAtomValue(loadingAtom);
 
   return (
     <Dialog
       size="xs"
-      open={loding}
+      open={loading}
       handler={() => {}}
       className="relative z-10 bg-transparent shadow-none"
     >

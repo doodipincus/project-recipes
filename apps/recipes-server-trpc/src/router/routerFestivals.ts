@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import { publicProcedure, router, sharedProcedure } from '../trpc';
 import { serviceFestivals } from '../service/serviceFestivals';
+import EventEmitter from 'events';
+import { observable } from '@trpc/server/observable';
+import { FestivalBack } from '../interface/interfacesFestivals';
 
+export const ee = new EventEmitter();
 
 export const festivalsRouter = router({
   addfestival: sharedProcedure
@@ -42,6 +46,18 @@ export const festivalsRouter = router({
     } catch (err) {
       console.error(err);
     }
+  }),
+  onAdd: publicProcedure.subscription(() => {
+    return observable<FestivalBack>((emit) => {
+      const onAdd = (data: FestivalBack) => {
+        emit.next(data)
+      }
+      ee.on('add',onAdd)
+
+      return () => {
+        ee.off('add', onAdd)
+      }
+    })
   }),
   // updatefestival: publicProcedure
   //     .input(

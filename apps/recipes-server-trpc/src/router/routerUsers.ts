@@ -39,7 +39,6 @@ export const usersRouter = router({
         update: z.object({
           user_name: z.string(),
           email: z.string(),
-          password: z.string(),
         }),
       })
     )
@@ -80,13 +79,13 @@ export const usersRouter = router({
   //     console.error(err);
   //   }
   // }),
-  incrementLike: publicProcedure.input(z.string()).mutation(async (opts) => {
-    try {
-      const { input } = opts;
-      const user = await serviceUsers.users.incrementLike(input);
-      return user;
-    } catch (err) {
-      console.error(err);
-    }
-  }),
+  // incrementLike: publicProcedure.input(z.string()).mutation(async (opts) => {
+  //   try {
+  //     const { input } = opts;
+  //     const user = await serviceUsers.users.incrementLike(input);
+  //     return user;
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }),
 })

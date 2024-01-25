@@ -9,10 +9,7 @@ import { useState } from 'react';
 export default function RegisterModal() {
   const [open, setOpen] = useState(false);
   // const [open, setOpen] = useAtom(modalRegisterAtom);
-  console.log(open);
-  console.log(localStorage.getItem('email'));
-  console.log(localStorage.getItem('password'));
-  
+  console.log(open);  
   
   const handleOpen = () => setOpen((cur) => !cur);
 

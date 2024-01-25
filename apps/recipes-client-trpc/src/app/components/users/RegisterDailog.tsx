@@ -5,7 +5,7 @@ import {
   userIsLoggedInAtom,
   userAtom,
   registerAtom,
-  lodingAtom,
+  loadingAtom,
 } from '../../utils/atoms';
 import { useEffect, useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
@@ -17,7 +17,7 @@ const RegisterDailog = () => {
   const setUserIsLoggedIn = useSetAtom(userIsLoggedInAtom);
   const setUser = useSetAtom(userAtom);
   const [checkboks, setCheckboxes] = useState(true);
-  const setLoding = useSetAtom(lodingAtom);
+  const setLoadingGlobal = useSetAtom(loadingAtom);
 
   const notify = () => {
     toast.success("You've logged in successfully!", {
@@ -32,7 +32,7 @@ const RegisterDailog = () => {
           createdAt
           email
           isAdmin
-          likes
+          reviews
           shared
           updatedAt
           userId
@@ -53,7 +53,7 @@ const RegisterDailog = () => {
       register.userName &&
       register.password === register.confirmPassword
     ) {
-      setLoding(true);
+      setLoadingGlobal(true);
       sendRegistertoServer({
         variables: {
           input: {
@@ -75,7 +75,7 @@ const RegisterDailog = () => {
     if (data) {
       console.log(data);
       console.log(data.createUser.user);
-      setLoding(false);
+      setLoadingGlobal(false);
       setUserIsLoggedIn(true);
       setUser(data.createUser.user);
       notify();
@@ -86,9 +86,12 @@ const RegisterDailog = () => {
     }
     if (error) {
       console.log(error);
-      setLoding(false);
+      setLoadingGlobal(false);
     }
   }, [data, error]);
+
+  const hasEmpty = Object.values(register).includes('');
+  console.log(hasEmpty);
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -204,12 +207,16 @@ const RegisterDailog = () => {
                     </span>
                   </label>
                 </div>
-                <div
-                  onClick={send}
-                  className="cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"
-                >
-                  התחבר
-                </div>
+                 
+                  <button
+                    type="button"
+                    disabled={hasEmpty}
+                    onClick={send}
+                    className={hasEmpty ? 'cursor-not-allowed w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500' :"cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"}
+                  >
+                    הרשם
+                  </button>
+              
               </form>
             </div>
           </div>

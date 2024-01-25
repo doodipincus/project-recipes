@@ -1,109 +1,79 @@
+-- Active: 1706168817007@@dpg-cmp0jf6g1b2c73f7rht0-a.oregon-postgres.render.com@5432@recipes_wf5a@recipes_schema
 
-CREATE DATABASE "Matching"
+CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA recipes_schema;
 
-CREATE SCHEMA matching
 
-DROP TABLE matching.Male;
-DROP TABLE matching.female;
-DROP TABLE matching.matchmaker;
 
-CREATE TABLE matching.Matchmaker (
-matchmakerId serial PRIMARY KEY NOT NULL,
-firstName TEXT NOT NULL,
-lastName TEXT NOT NULL,
-birthDate TEXT NOT NULL,
-email text Unique NOT NULL,
-phoneNumber TEXT NOT NULL Unique,
-gender TEXT NOT NULL CHECK (gender = 'male' OR gender = 'female'),
-specialty TEXT NOT NULL,
-password TEXT NOT NULL,
-createdAt DATE DEFAULT CURRENT_TIMESTAMP,
-updatedAt DATE DEFAULT CURRENT_TIMESTAMP
+CREATE TYPE recipes_schema.login_respons AS
+(
+	jwt_token recipes_schema.token,
+	user_details json
 );
+ALTER TYPE recipes_schema.login_respons
+    OWNER TO lhihntov;
 
 
 
-
-
-CREATE TABLE matching.Female(
-matchFemaleId serial PRIMARY KEY NOT NULL,
-firstName TEXT NOT NULL,
-lastName TEXT NOT NULL,
-birthDate TEXT NOT NULL,
-email text Unique NOT NULL,
-phoneNumber TEXT NOT NULL Unique,
-password TEXT NOT NULL,
-currentAddress TEXT ,
-origin TEXT NOT NULL,
-height NUMERIC NOT NULL,
-higherEducation TEXT NOT NULL,
-educationName TEXT,
-higherEducationAcademy TEXT,
-jobStatus TEXT NOT NULL,
-jobCompany TEXT,
-seminar TEXT NOT NULL,
-headwear TEXT NOT NULL,
-pelKoshers TEXT NOT NULL,
-fatherName TEXT,
-motherName TEXT,
-maritalStatus TEXT NOT NULL,
-gender TEXT NOT NULL CHECK (gender = 'male' OR gender = 'female'),
-imgLink TEXT,
-createdAt DATE DEFAULT CURRENT_TIMESTAMP,
-updatedAt DATE DEFAULT CURRENT_TIMESTAMP
+CREATE TYPE recipes_schema.login_response AS
+(
+	user_details json
 );
+ALTER TYPE recipes_schema.login_response
+    OWNER TO lhihntov;
 
-CREATE TABLE matching.Male(
-matchMaleId serial PRIMARY KEY NOT NULL,
-firstName TEXT NOT NULL,
-lastName TEXT NOT NULL,
-birthDate TEXT NOT NULL,
-email text Unique NOT NULL,
-phoneNumber TEXT NOT NULL Unique,
-password TEXT NOT NULL,
-currentAddress TEXT ,
-origin TEXT NOT NULL,
-height NUMERIC NOT NULL,
-yeshiva TEXT NOT NULL,
-torahStudyStatus TEXT NOT NULL,
-higherEducation TEXT NOT NULL,
-educationName TEXT,
-higherEducationAcademy TEXT,
-jobStatus TEXT NOT NULL,
-jobCompany TEXT NOT NULL,
-headwear TEXT NOT NULL,
-pelKoshers TEXT NOT NULL,
-fatherName TEXT,
-motherName TEXT,
-maritalStatus TEXT NOT NULL,
-gender TEXT NOT NULL CHECK (gender = 'male' OR gender = 'female'),
-imgLink TEXT,
-createdAt DATE DEFAULT CURRENT_TIMESTAMP,
-updatedAt DATE DEFAULT CURRENT_TIMESTAMP
+
+
+CREATE TYPE recipes_schema.token AS
+(
+	password text,
+	email text,
+	isadmin boolean
 );
-
-
-CREATE TYPE matching.token AS (
- password TEXT, email TEXT
-);
-
-CREATE TYPE matching.login_response AS (
-  jwt_token matching.token,
-  user_details  json
-);
+ALTER TYPE recipes_schema.token
+    OWNER TO lhihntov;
 
 
 
+CREATE TRIGGER password_encrypt 
+BEFORE INSERT ON recipes_schema.users
+FOR EACH ROW 
+EXECUTE PROCEDURE recipes_schema.password_encrypt();
 
 
 
-CREATE FUNCTION matching.decrypt_password_function(encrypted_password text) 
-RETURNS text AS $$
+CREATE OR REPLACE FUNCTION recipes_schema.password_encrypt()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+  NEW.password = recipes_schema.pgp_sym_encrypt(NEW.password, 'secret_key');
+  RETURN NEW;
+END;
+$BODY$;
+
+ALTER FUNCTION recipes_schema.password_encrypt()
+    OWNER TO lhihntov;
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION recipes_schema.decrypt_password_function(
+	encrypted_password text)
+    RETURNS text
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+
 DECLARE 
    decrypted_password text;
 BEGIN
   
-  SELECT matching.pgp_sym_decrypt(encrypted_password::bytea, 'secret_key')
+  SELECT recipes_schema.pgp_sym_decrypt(encrypted_password::bytea, 'secret_key')
   INTO decrypted_password;
   
   IF decrypted_password IS NULL THEN
@@ -113,252 +83,98 @@ BEGIN
   RETURN decrypted_password;
   
 END;
-$$ LANGUAGE plpgsql;
+$BODY$;
+
+ALTER FUNCTION recipes_schema.decrypt_password_function(text)
+    OWNER TO lhihntov;
 
 
 
 
 
-
-
-
-
-
-CREATE OR REPLACE FUNCTION matching.login(email text, password text, tablename text) 
-RETURNS matching.login_response AS $$
-
-DECLARE
-  hashed_password text;
-  currentmale matching.Male;
-  currentfemale matching.Female;
-  currentmatchmakers matching.Matchmaker;
+CREATE OR REPLACE FUNCTION recipes_schema.login(
+	email text,
+	password text)
+    RETURNS recipes_schema.login_respons
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+declare
+  user_details recipes_schema.users;
+  password_hash text;
   user_json json;
-BEGIN
--- 
-IF login.tablename = 'female' THEN
-  SELECT matching.decrypt_password_function(matching.Female.password) 
-  INTO hashed_password
-  FROM matching.Female 
-  WHERE matching.Female.email = login.email;
-
-  SELECT a.*
-  INTO currentfemale
-  FROM matching.Female as a
-  WHERE a.email = login.email;
-
-  IF hashed_password IS NULL THEN
-    RAISE EXCEPTION 'Invalid email or password';
-  END IF;
-
-  IF NOT hashed_password =  login.password THEN
-    RAISE EXCEPTION 'Invalid email or password';
-  END IF;
-
-   user_json = json_build_object(
-    'matchfemaleid', currentfemale.matchFemaleId,
-'firstname', currentfemale.firstName,
-'lastname', currentfemale.lastName,
-'birthdate', currentfemale.birthDate,
-'email', currentfemale.email,
-'phonenumber', currentfemale.phoneNumber,
-'currentaddress', currentfemale.currentAddress,
-'origin', currentfemale.origin,
-'height', currentfemale.height,
-'highereducation', currentfemale.higherEducation,
-'educationname', currentfemale.educationName,
-'highereducationacademy', currentfemale.higherEducationAcademy,
-'jobstatus', currentfemale.jobStatus,
-'jobcompany', currentfemale.jobCompany,
-'seminar', currentfemale.seminar,
-'headwear', currentfemale.headwear,
-'pelkoshers', currentfemale.pelKoshers,
-'fathername', currentfemale.fatherName,
-'mothername', currentfemale.motherName,
-'maritalstatus', currentfemale.maritalStatus,
-'gender', currentfemale.gender,
-'imglink', currentfemale.imgLink,
-"createdAt", currentfemale.createdat,
-"updatedAt", currentfemale, updatedat
-   );
-   RETURN ROW(
-    ROW(currentfemale.email,
-      currentfemale.password)::matching.token,
-      user_json
-    )::matching.login_response;
-  END IF;
---  ----------------------------------------------------------
-  IF login.tablename = 'male' THEN
-  SELECT matching.decrypt_password_function(matching.Male.password) 
-  INTO hashed_password
-  FROM matching.Male 
-  WHERE matching.Male.email = login.email;
-
-  SELECT a.*
-  INTO currentmale
-  FROM matching.Male as a
-  WHERE a.email = login.email;
-
   
-  IF hashed_password IS NULL THEN
-    RAISE EXCEPTION 'Invalid email or password';
+begin
+
+	select recipes_schema.decrypt_password_function(recipes_schema.users.password)
+	 into password_hash
+	 FROM recipes_schema.users
+	 where recipes_schema.users.email = login.email;
+	 
+	 
+  select a.* into user_details
+    from recipes_schema.users as a
+    where a.email = login.email;
+	
+	IF password_hash IS NULL THEN
+    RAISE EXCEPTION 'password null Invalid email or password';
   END IF;
-
-  IF NOT hashed_password =  login.password THEN
-    RAISE EXCEPTION 'Invalid email or password';
-  END IF;
-
-   user_json = json_build_object(
-    'matchmaleid', currentmale.matchMaleId,
-'firstname', currentmale.firstName,
-'lastname', currentmale.lastName,
-'birthdate', currentmale.birthDate,
-'email', currentmale.email,
-'phonenumber', currentmale.phoneNumber,
-'currentaddress', currentmale.currentAddress,
-'origin', currentmale.origin,
-'height', currentmale.height,
-'yeshiva', currentmale.yeshiva,
-'torahstudystatus', currentmale.torahStudyStatus,
-'highereducation', currentmale.higherEducation,
-'educationname', currentmale.educationName,
-'highereducationacademy', currentmale.higherEducationAcademy,
-'jobstatus', currentmale.jobStatus,
-'jobcompany', currentmale.jobCompany,
-'headwear', currentmale.headwear,
-'pelkoshers', currentmale.pelKoshers,
-'fathername', currentmale.fatherName,
-'mothername', currentmale.motherName,
-'maritalstatus', currentmale.maritalStatus,
-'gender', currentmale.gender,
-'imglink', currentmale.imgLink,
-"createdAt", currentmale.createdat,
-"updatedAt", currentmale, updatedat
-   );
-   RETURN ROW(
-    ROW(currentmale.email,
-      currentmale.password)::matching.token,
-      user_json
-    )::matching.login_response;
- END IF;
--- -------------------------------------------
-  IF login.tablename = 'matchmaker' THEN
-  SELECT matching.decrypt_password_function(matching.Matchmaker.password) 
-    INTO hashed_password
-  FROM matching.Matchmaker 
-  WHERE matching.Matchmaker.email = login.email;
-
-  SELECT a.*
-  INTO currentmatchmakers
-  FROM matching.Matchmaker as a
-  WHERE a.email = login.email;
-
   
-  IF hashed_password IS NULL THEN
-    RAISE EXCEPTION 'Invalid email or password';
-  END IF;
+  if not login.password = password_hash then
+  RAISE EXCEPTION 'Invalid email or password';
+  end if;
+  
+  
+    user_json = json_build_object(
+		'userName', user_details.user_name,
+		'isAdmin', user_details."isAdmin",
+		'reviews', user_details.reviews,
+		'shared', user_details.shared,
+		'createdAt', user_details."createdAt",
+		'email', user_details.email,
+		'userId', user_details.user_id
+		
+	);
+	return row (
+ 	row(
+		user_details.password,
+		user_details.email,
+		user_details."isAdmin"
+	)::recipes_schema.token,
+		user_json
+    )::recipes_schema.login_respons;
+     
+  
+end;
+$BODY$;
 
-  IF NOT hashed_password =  login.password THEN
-    RAISE EXCEPTION 'Invalid email or password';
-  END IF;
-
-   user_json = json_build_object(
-    'matchmakerid', currentmatchmakers.matchmakerId,
-'firstname', currentmatchmakers.firstName,
-'lastname', currentmatchmakers.lastName,
-'birthdate', currentmatchmakers.birthDate,
-'email', currentmatchmakers.email,
-'phonenumber', currentmatchmakers.phoneNumber,
-'specialty', currentmatchmakers.specialty,
-'gender', currentmatchmakers.gender
-   );
-   RETURN ROW(
-    ROW(currentmatchmakers.email,
-      currentmatchmakers.password)::matching.token,
-      user_json
-    )::matching.login_response;
-  END IF;
-
-END;
-$$ LANGUAGE plpgsql;
-
-
-
-
-
+ALTER FUNCTION recipes_schema.login(text, text)
+    OWNER TO lhihntov;
 
 
-
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" SCHEMA recipes_schema
 
 
 
-
-
-
-CREATE FUNCTION matching.password_encrypt() 
-RETURNS trigger AS $$
-BEGIN
-  NEW.password = matching.pgp_sym_encrypt(NEW.password, 'secret_key');
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER password_encrypt 
-BEFORE INSERT ON matching.Female
-FOR EACH ROW 
-EXECUTE PROCEDURE matching.password_encrypt();
-
-
-CREATE TRIGGER password_encrypt 
-BEFORE INSERT ON matching.male
-FOR EACH ROW 
-EXECUTE PROCEDURE matching.password_encrypt();
-
-CREATE TRIGGER password_encrypt 
-BEFORE INSERT ON matching.Matchmaker
-FOR EACH ROW 
-EXECUTE PROCEDURE matching.password_encrypt();
+    INSERT INTO "recipes_schema"."users" ("email", "password", "user_name", "isAdmin", "reviews", "shared", "user_id", "createdAt", "updatedAt")
+VALUES
+  ('1@example.com', '1111', 'User1', false, 3, 2, recipes_schema.uuid_generate_v4(), '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z'),
+  ('2@example.com', '1111', 'User2', false, 5, 8, recipes_schema.uuid_generate_v4(), '2024-01-22T13:30:00Z', '2024-01-22T13:30:00Z'),
+  ('3@example.com', '1111', 'Admin', true, 10, 15, recipes_schema.uuid_generate_v4(), '2024-01-22T14:45:00Z', '2024-01-22T14:45:00Z');
 
 
 
 
+INSERT INTO "recipes_schema"."recipes" ("recipe_id", "title", "category", "image", "creator_name", "creator_email", "sensitivity", "country_of_origin", "difficulty", "ingredients", "instructions", "preparation_time", "num_reviews", "rating", "createdAt", "updatedAt")
+VALUES
+  (recipes_schema.uuid_generate_v4(), 'עוגת שוקולד', 'קינוח', 'https://example.com/chocolate-cake.jpg', 'ישראל ישראלי', '1@example.com', 'בינונית', 'ישראל', 'בינונית', '{"2 כוסות קמח רגיל", "כוס סוכר", "חצי כוס קקאו איכותי", "כפית אבקת סודה לשתייה", "חצי כפית אבקת סודה לבישול", "חצי כפית מלח", "כוס חלב", "חצי כוס שמן צמחי", "ביצים גדולות 2", "כפית תמצית וניל", "כוס מים רותחים"}', '1. מחממים תנור ל-175 מעלות צלסיוס. 2. משמנים ומקפיצים שתי תבניות עגולות בקוטר 9 אינצ׳. ...', 'שעה', 10, 4.5 , '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z'),
+  (recipes_schema.uuid_generate_v4(), 'ספגטי בולונז', 'מנה עיקרית', 'https://example.com/spaghetti-bolognese.jpg', 'מרים לוי', '1@example.com', 'נמוכה', 'ישראל', 'קלה', '{"400 גרם ספגטי", "ליבה בשר טחון 500 גרם", "בצל קטן, קצוץ דק", "שני שיניים שום, קצוץ דק", "1/2 כוס רוטב עגבניות (14 אונקיות)", "רבע כוס רוטב רגיל (כף ורבע)", "חצי כוס יין אדום", "כפית אורגנו יבש", "כפית בזיליקום יבש", "מלח ופלפל שחור לפי הטעם", "פרמזן מגורר לגישה"}', '1. מבשלים את הספגטי על פי ההוראות באריזה. 2. בסיר רחב ושטוח, מטגנים את הבשר הטחון על להבה גבוהה עם מעט שמן עד שהבשר משנה צבעו ונשמר על החומרת הכביסה הקודמת. ...', '45 דקות', 8, 4.2 , '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z'),
+  (recipes_schema.uuid_generate_v4(), 'סלט סיזר עם עוף', 'סלט', 'https://example.com/chicken-caesar-salad.jpg', 'דני כהן', '3@example.com', 'נמוכה', 'ישראל', 'קלה', '{"חזה עוף חתוך לפסים", "קישואים קטנים, קלים", "קולורבי קטן, קל", "קישואים צהובים קטנים, קלים", "רומני, קצוץ גס", "קרוטונים", "פרמזן מגורר", "רוטב סיזר"}', '1. שטוחים את החזה עוף ומבשלים אותו במים רותחים ומלח כ-15 דקות עד שהוא מתייצב. 2. קוטעים את החזה עוף לפסים דקים. ...', '30 דקות', 12, 4.8, '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z');
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA matching;
-
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION pgcrypto;
-
-SELECT matching.pgp_sym_encrypt('test', 'key');
-SELECT matching.pgp_sym_decrypt('\xC30D040703027D952C91FB3674E675D2350172E6A19737360EA7C1CF8382825DE1FA43071360D93F471801A9EF4DC077BA3935270BAD6ED1FE5C1B44261C2F91BC3758BD36FF', 'key');
-
-
-
-
-
-SELECT * FROM pg_extension WHERE extname = 'pgcrypto';
-
-
-
-SELECT n.nspname, p.proname, pg_catalog.pg_get_function_arguments(p.oid) as params
-FROM   pg_catalog.pg_proc p
-JOIN   pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-WHERE  p.proname ~~* '%pgp_sym_decrypt%'
-AND    pg_catalog.pg_function_is_visible(p.oid);
+INSERT INTO "recipes_schema"."festivals" ("festival_id","festival_name", "festival_description", "festival_date_time", "festival_image", "festival_creator_name", "festival_creator_email", "festival_location" , "createdAt", "updatedAt")
+VALUES
+  (recipes_schema.uuid_generate_v4(),'פסטיבל המוזיקה 2022', 'פסטיבל מוזיקה עם הופעות של אמנים מוכרים', '2022-08-15 18:00:00', 'https://example.com/music-festival.jpg', 'רועי כהן', '2@example.com', '{"32.0844", "34.7997"}', '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z'),
+  (recipes_schema.uuid_generate_v4(),'פסטיבל האוכל הגורמה', 'פסטיבל אוכל עם מגוון רחב של מסעדות וסטנדים', '2022-09-10 12:00:00', 'https://example.com/food-festival.jpg', 'שרה לוי', '3@example.com', '{"31.7719", "35.2170"}', '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z'),
+  (recipes_schema.uuid_generate_v4(),'פסטיבל הקולנוע הבינלאומי', 'פסטיבל קולנוע עם הקרנות של הסרטים הכי חמים', '2022-10-20 20:30:00', 'https://example.com/film-festival.jpg', 'דני אהרונוביץ', '3@example.com', '{"32.0684", "34.7696"}', '2024-01-22T12:00:00Z', '2024-01-22T12:00:00Z');

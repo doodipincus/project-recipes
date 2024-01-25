@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { createRecipe, deleteRecipeDal, getRecipeByCreator, getRecipes, updateRecipeDal } from '../dal/dalRecipes';
+import { addRatingDal, createRecipe, deleteRecipeDal, getRecipeByCreator, getRecipes, updateRecipeDal } from '../dal/dalRecipes';
 import { AddRecipes } from '../interface/interfacesRecipes';
 
 
@@ -28,6 +28,12 @@ export const serviceRecipe = {
         },
         deleteRecipe: async (id: string, token) => {
             const deleteRecipe = await deleteRecipeDal(id, token);
+            if (deleteRecipe) return deleteRecipe;
+            return 'recipe not found';
+        },
+        addRating: async (input) => {
+            const { id, email, user_name, rating, comment } = input;
+            const deleteRecipe = await addRatingDal(id, email, user_name, rating, comment)
             if (deleteRecipe) return deleteRecipe;
             return 'recipe not found';
         },

@@ -5,27 +5,33 @@ import CardRecipe from './CardRecipe';
 import Skeleton from '../loading/Skeleton';
 import Title from './Title';
 import { useAtom } from 'jotai';
-import { lodingAtom } from '../../utils/atoms';
+import { loadingAtom } from '../../utils/atoms';
 import { trpc } from '../../utils/trpc';
 
 export default function RecipesByCreator() {
   const [recipesByCreator, setRecipesByCreator] = useState<RecipeBack[]>([]);
   const { id } = useParams();
-  const [loading, setLoading] = useAtom(lodingAtom);
+  const [loading, setLoading] = useAtom(loadingAtom);
+  const [errorFromServer, setErrorFromServer] = useState<string>('');
 
   const getRecipesByCreator = async () => {
     try {
       if (id) {
         setLoading(true);
-        const resipes = await trpc.recipes.getRecipesByCreator.query(id);
-        if (resipes?.length && typeof resipes !== 'string') {
-          console.log(resipes);
-          setRecipesByCreator(resipes);
+        const res = await trpc.recipes.getRecipesByCreator.query(id);
+        if (res?.length && typeof res !== 'string') {
+          console.log(res);
+          setRecipesByCreator(res);
           setLoading(false);
+        }
+        if (res && typeof res === 'string') {
+          setLoading(false);
+          setErrorFromServer(res);
         }
       }
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -36,7 +42,7 @@ export default function RecipesByCreator() {
   return (
     <div className="bg-white py-24 sm:py-32 flex">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <Title />
+        {/* <Title /> */}
         {loading ? (
           <div>
             <Skeleton />
@@ -50,6 +56,7 @@ export default function RecipesByCreator() {
           </div>
         )}
       </div>
+      {errorFromServer && <p>{errorFromServer}</p>}
     </div>
   );
 }

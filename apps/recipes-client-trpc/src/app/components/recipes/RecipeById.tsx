@@ -1,27 +1,39 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { allRecipesAtom } from '../../utils/atoms';
-import { useAtom } from 'jotai';
+import { allRecipesAtom, userAtom, userIsLoggedInAtom } from '../../utils/atoms';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { RecipeBack, Recipes } from '../../interfaces/recipes';
 import { formatDateTime } from '../../utils/date';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { classNames } from '../../css/classes';
-
-const product = {
-  price: '$192',
-};
-
-const reviews = { href: '#', average: 4, totalCount: 117 };
-
+import Rating from './Rating';
+import PersonalRating from './PersonalRating';
+import { trpc } from '../../utils/trpc';
+import { FavoriteBack } from '../../interfaces/favorites';
 
 
 export default function Example() {
-  const { id } = useParams();
   const [allRecipes] = useAtom(allRecipesAtom);
   const [recipe, setRecipe] = useState<RecipeBack | undefined>();
+  const userIsLoggedIn = useAtomValue(userIsLoggedInAtom)
+  const user = useAtomValue(userAtom)
+  const [oldPersonalRating, setOldPersonalRating] = useState<FavoriteBack>()
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  
+const getPersonalRating = async () =>{
+  if(user.email && id){
+    try {
+      const res = await trpc.favorites.getFavoritesByUserAndRecipe.query({email:user.email, recipe_id: id});  
+      if(res && typeof res !== 'string'){
+      setOldPersonalRating(res)
+    }
+    } catch (error) {
+      
+    }
+  }
+}
+
   useEffect(() => {
     if (id) {
       console.log(allRecipes);
@@ -29,9 +41,9 @@ export default function Example() {
       console.log(newRecipe);
       setRecipe(newRecipe);
     }
+    getPersonalRating()
   }, []);
-
-
+  
   return (
     <div className="bg-white">
       <div className="pt-6">
@@ -55,37 +67,6 @@ export default function Example() {
           </div>
 
           {/* Options */}
-          <div className="mt-4 lg:row-span-3 lg:mt-0">
-            <h2 className="sr-only">Product information</h2>
-            <p className="text-3xl tracking-tight text-gray-900">
-              {product.price}
-            </p>
-
-            {/* Reviews */}
-            <div className="mt-6">
-              <h3 className="sr-only">Reviews</h3>
-              <div className="flex items-center">
-                <div className="flex items-center">
-                  {[0, 1, 2, 3, 4].map((rating) => (
-                    <StarIcon
-                      key={rating}
-                      className={classNames(
-                        reviews.average > rating
-                          ? 'text-gray-900'
-                          : 'text-gray-200',
-                        'h-5 w-5 flex-shrink-0'
-                      )}
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-                {/* <p className="sr-only">{reviews.average} out of 5 stars</p> */}
-                <div className="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                  {reviews.totalCount} reviews
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
             {/* Description and details */}
@@ -113,25 +94,40 @@ export default function Example() {
               </div>
             </div>
 
+            {/* Reviews */}
+            <div className="mt-4 lg:row-span-3 lg:mt-0">
+              <Rating
+                props={{ rating: recipe?.rating, reviews: recipe?.num_reviews, id: recipe?.recipe_id}}
+              />
+              {(id && userIsLoggedIn) && <PersonalRating id={id} rating={oldPersonalRating?.stars} comment={oldPersonalRating?.comment}/>}
+            </div>
             <div className="mt-10">
               <div className="relative mt-8 flex items-center gap-x-4">
-                <div
+                <button
                   onClick={() =>
                     navigate(`/recipes/creator/${recipe?.creator_email}`)
                   }
+                  className="hover:scale-110 overflow-hidden flex items-center"
                 >
-                  <img
+                  {/* <img
                     src="kj"
                     alt=""
                     className="h-10 w-10 rounded-full bg-gray-50"
-                  />
+                  /> */}
+                  <div className="flex flex-shrink-0 self-start cursor-pointer">
+                    <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
+                      <p className="text-xl text-white">
+                        {recipe?.creator_name[0]}
+                      </p>
+                    </div>
+                  </div>
                   <div className="text-sm leading-6">
                     <p className="font-semibold text-gray-900">
                       <span className="absolute inset-0" />
                       {recipe?.creator_name}
                     </p>
                   </div>
-                </div>
+                </button>
                 {recipe?.createdAt && (
                   <div className="flex items-center gap-x-4 text-xs">
                     <time dateTime={recipe.createdAt} className="text-gray-500">

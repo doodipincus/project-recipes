@@ -6,7 +6,7 @@ import {
   signInAtom,
   userAtom,
   modalRegisterAtom,
-  lodingAtom,
+  loadingAtom,
 } from '../../utils/atoms';
 import { useEffect, useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
@@ -17,11 +17,10 @@ const SignInDailog = () => {
   const setRegisterModal = useSetAtom(modalRegisterAtom);
   const setUserIsLoggedIn = useSetAtom(userIsLoggedInAtom);
   const [checkboks, setCheckboxes] = useState(true);
-  const setLoding = useSetAtom(lodingAtom);
-  
+  const setLoadingGlobal = useSetAtom(loadingAtom);
+
   // const setUser = useSetAtom(userAtom);
   const [user, setUser] = useAtom(userAtom);
-
 
   const notify = () => {
     toast.success('!התחברת בהצלחה', {
@@ -44,14 +43,14 @@ const SignInDailog = () => {
 
   const send = () => {
     if (signIn.email && signIn.password) {
-      setLoding(true);
+      setLoadingGlobal(true);
       signInToServer({ variables: { input: signIn } });
     }
   };
 
   useEffect(() => {
     if (data && data.login.loginRespon) {
-      setLoding(false);
+      setLoadingGlobal(false);
       notify();
       setUserIsLoggedIn(true);
       setUser(data.login.loginRespon.userDetails);
@@ -62,10 +61,13 @@ const SignInDailog = () => {
       // }
     }
     if (error) {
-      setLoding(false);
+      setLoadingGlobal(false);
       console.error(error);
     }
   }, [data, error]);
+
+  const hasEmpty = Object.values(signIn).includes('');
+  console.log(hasEmpty);
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -152,12 +154,18 @@ const SignInDailog = () => {
                   </button>
                 </div>
                 <button
-                  type="submit"
+                  type="button"
                   onClick={send}
-                  className="cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"
+                  disabled={hasEmpty}
+                  className={
+                    hasEmpty
+                      ? 'cursor-not-allowed w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500'
+                      : 'cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500'
+                  }
                 >
                   התחבר
                 </button>
+
                 <p className="text-sm leading-relaxed text-grey-900">
                   אינך רשום?{' '}
                   <div

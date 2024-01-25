@@ -10,9 +10,7 @@ import {
 } from '@material-tailwind/react';
 import { ChevronUpIcon } from '@heroicons/react/24/solid';
 
-
 const MenuProfile = () => {
-
   const [openMenuPerson, setOpenMenuPerson] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [userIsLoggedIn, setUserIsLoggedIn] = useAtom(userIsLoggedInAtom);
@@ -41,11 +39,18 @@ const MenuProfile = () => {
               <MenuItem className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                 <span className="absolute -inset-1.5" />
                 <span className="sr-only">Open user menu</span>
-                <img
+                {/* <img
                   className="h-8 w-8 rounded-full"
                   // src=""
                   alt="gtyjuyuy"
-                />
+                /> */}
+                <div className="flex flex-shrink-0 self-start cursor-pointer">
+                  <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
+                    <p className="text-xl text-white">
+                      {user.userName ? user.userName[0] : ''}
+                    </p>
+                  </div>
+                </div>
               </MenuItem>
             </div>
           </MenuHandler>
@@ -88,6 +93,12 @@ const MenuProfile = () => {
                     onClick={() => navigate(`/personalRecipe/${user.userId}`)}
                   >
                     מתכונים ששיתפת
+                  </MenuItem>
+                  <MenuItem
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                    onClick={() => navigate(`/personalReviews`)}
+                  >
+                    ביקורות שנתת
                   </MenuItem>
                 </MenuList>
               </Menu>

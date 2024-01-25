@@ -1,9 +1,10 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
+import { FavoriteAttributes, FavoriteBack } from '../interface/interfacesFavorites';
 
 
-export const Favorite = sequelize.define(
+export const Favorite = sequelize.define<Model<FavoriteBack, FavoriteAttributes>>(
     'favorite',
     {
         favorite_id: {
@@ -28,6 +29,18 @@ export const Favorite = sequelize.define(
                 key: 'email',
             }
         },
+        user_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        stars: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        comment: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        }
     },
     {
         tableName: 'favorites',

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { allRecipesAtom, lodingAtom, userAtom } from '../../utils/atoms';
+import { allRecipesAtom, loadingAtom, userAtom } from '../../utils/atoms';
 import CardRecipe from './CardRecipe';
 import Skeleton from '../loading/Skeleton';
 import Loading from '../loading/Loading';
@@ -9,13 +9,15 @@ import { trpc } from '../../utils/trpc';
 
 export default function AllRecipes() {
   const [allRecipes, setAllRecipes] = useAtom(allRecipesAtom);
-  const [loading, setLoading] = useAtom(lodingAtom);
+  const [loading, setLoading] = useAtom(loadingAtom);
   const user = useAtomValue(userAtom);
 
   const getRecipes = async () => {
     try {
       setLoading(true);
       const resipes = await trpc.recipes.getRecipes.query();
+      console.log(resipes);
+      
       if (resipes?.length && typeof resipes !== 'string') {
         console.log(resipes);
         setAllRecipes(resipes);
@@ -23,23 +25,39 @@ export default function AllRecipes() {
       }
     } catch (error) {
       console.error(error);
+      setLoading(false);
+    }
+  };
+
+  const subscribeToRecipes = async () => {
+    try {
+      await trpc.recipes.onAdd.subscribe(undefined, {
+        onData: (data) => {
+          setAllRecipes((prev) => [...prev, data]);
+        },
+        onError: (err) => {
+          console.error('Subscription error:', err);
+        },
+      });
+    } catch (err) {
+      console.error('Error subscribing to messages:', err);
     }
   };
 
   useEffect(() => {
-    getRecipes();
+    if (!allRecipes.length) {
+      getRecipes();
+    }
+    subscribeToRecipes();
   }, []);
 
   useEffect(() => {
     console.log(user);
   }, [user]);
 
-
   useEffect(() => {
-    if(allRecipes.length)
-    console.log(typeof allRecipes[0].createdAt);
+    if (allRecipes.length) console.log(typeof allRecipes[0].createdAt);
   }, [allRecipes]);
-
 
   return (
     <div className="bg-white py-24 sm:py-32 flex">

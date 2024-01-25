@@ -1,34 +1,7 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
-
-
-
-
-export interface RecipeAttributes {
-  recipe_id: string;
-  title: string;
-  category: string;
-  image: string;
-  creator_name: string;
-  creator_email:string
-  sensitivity: string;
-  country_of_origin: string;
-  difficulty: string;
-  ingredients: string[];
-  instructions: string;
-  preparation_time: string;
-  num_reviews: number;
-  rating: number;
-}
-
-interface RecipeInstance {
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-
-interface RecipeBack extends RecipeInstance, RecipeAttributes { }
+import { RecipeAttributes, RecipeBack } from '../interface/interfacesRecipes';
 
 
 

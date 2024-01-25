@@ -12,7 +12,6 @@ import { ChevronUpIcon } from '@heroicons/react/24/solid';
 import { classNames } from '../../css/classes';
 
 const ButtonsAndLogo = () => {
-    
   const [openMenuAdmin, setOpenMenuAdmin] = useState(false);
   const user = useAtomValue(userAtom);
   const navigate = useNavigate();
@@ -38,11 +37,10 @@ const ButtonsAndLogo = () => {
               'text-gray-300 hover:bg-gray-700 hover:text-white',
               'rounded-md px-3 py-2 text-sm font-medium'
             )}
-            // aria-current={item.current ? 'page' : undefined}
           >
             לפסטיבלי אוכל
           </button>
-          {/* {((user.likes && user.likes >= 30) || user.isAdmin) && ( */}
+          {((user.reviews && user.reviews >= 30) || user.isAdmin) && (
             <button
               // key={item.name}
               onClick={() => navigate(`/addRecipe`)}
@@ -50,11 +48,10 @@ const ButtonsAndLogo = () => {
                 'text-gray-300 hover:bg-gray-700 hover:text-white',
                 'rounded-md px-3 py-2 text-sm font-medium'
               )}
-              // aria-current={item.current ? 'page' : undefined}
             >
               הוסף מתכון
             </button>
-          {/* )} */}
+          )}
           {user.isAdmin && (
             <Menu
               // placement="left-start"
@@ -85,6 +82,12 @@ const ButtonsAndLogo = () => {
                   onClick={() => navigate(`/allUsers`)}
                 >
                   כל המשתמשים
+                </MenuItem>
+                <MenuItem
+                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                  onClick={() => navigate(`/allReviews`)}
+                >
+                  כל הביקורות
                 </MenuItem>
                 <MenuItem
                   className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"

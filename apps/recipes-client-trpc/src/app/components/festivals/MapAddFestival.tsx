@@ -42,7 +42,7 @@ export default function MapAddFestival(): JSX.Element {
         {newFeature && (
           <RFeature key={newFeature.get('uid')} feature={newFeature}>
             <RPopup trigger="hover" positioning="bottom-center">
-              <div style={{ backgroundColor: 'white' }}>ghjghj</div>
+              <div style={{ backgroundColor: 'white' }}>הוספת עכשיו</div>
             </RPopup>
           </RFeature>
         )}

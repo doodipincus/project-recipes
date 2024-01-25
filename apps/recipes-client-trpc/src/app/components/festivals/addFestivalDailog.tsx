@@ -1,4 +1,4 @@
-import { lodingAtom, newFestivalAtom, userAtom } from '../../utils/atoms';
+import { loadingAtom, newFestivalAtom, userAtom } from '../../utils/atoms';
 import { useAtom, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
@@ -9,7 +9,7 @@ import AlertSecces from '../../utils/AlertSecces';
 const AddFestivalDailog = () => {
   const [newFestival, setNewFestival] = useAtom(newFestivalAtom);
   const [user] = useAtom(userAtom);
-  const setLodingGlobal = useSetAtom(lodingAtom);
+  const setLoadingGlobal = useSetAtom(loadingAtom);
 
   const notify = () => {
     toast.success('!הפסטיבל נוסף בהצלחה', {
@@ -23,10 +23,10 @@ const AddFestivalDailog = () => {
     console.log('add festival');
     try {
       if (newFestival.festivalLocation.length) {
-        setLodingGlobal(true);
+        setLoadingGlobal(true);
         const res = await trpc.festivals.addfestival.mutate(newFestival);
         console.log(res);
-        setLodingGlobal(false);
+        setLoadingGlobal(false);
         notify();
       }
     } catch (error) {
@@ -47,6 +47,11 @@ const AddFestivalDailog = () => {
   useEffect(() => {
     addCrator();
   }, []);
+
+  const hasEmpty =
+    Object.values(newFestival).includes('') ||
+    newFestival.festivalLocation.length === 0;
+  console.log(hasEmpty);
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -75,6 +80,7 @@ const AddFestivalDailog = () => {
                       festivalName: e.target.value,
                     })
                   }
+                  value={newFestival.festivalName}
                 />
                 <label
                   htmlFor="datetime"
@@ -97,6 +103,7 @@ const AddFestivalDailog = () => {
                       festivalDateTime: formattedDateAndTime,
                     });
                   }}
+                  // value={new Date(newFestival.festivalDateTime)}
                 />
                 <label
                   htmlFor="datetime"
@@ -113,6 +120,7 @@ const AddFestivalDailog = () => {
                       festivalDescription: e.target.value,
                     })
                   }
+                  value={newFestival.festivalDescription}
                 />
                 <label
                   htmlFor="image"
@@ -130,14 +138,20 @@ const AddFestivalDailog = () => {
                       festivalImage: e.target.value,
                     })
                   }
+                  value={newFestival.festivalImage}
                 />
-
-                <div
+                <button
+                  type="button"
                   onClick={addFestival}
-                  className="cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"
+                  disabled={hasEmpty}
+                  className={
+                    hasEmpty
+                      ? 'cursor-not-allowed w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500'
+                      : 'cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500'
+                  }
                 >
-                  שלח
-                </div>
+                  הוסף פסטיבל
+                </button>
               </form>
               <MapAddFestival />
             </div>

@@ -14,7 +14,6 @@ import { ChevronUpIcon } from '@heroicons/react/24/solid';
 import RegisterModal from '../users/RegisterModal';
 import { classNames } from '../../css/classes';
 
-
 const Panel = () => {
   const [openMenuRec, setOpenMenuRec] = useState(false);
   const [openMenuAdminRec, setOpenMenuAdminRec] = useState(false);
@@ -28,6 +27,7 @@ const Panel = () => {
     setUser(resetUser);
     localStorage.removeItem('email');
     localStorage.removeItem('password');
+    localStorage.removeItem('TOKEN');
   };
 
   return (
@@ -40,11 +40,10 @@ const Panel = () => {
             'text-gray-300 hover:bg-gray-700 hover:text-white',
             'rounded-md px-3 py-2 text-sm font-medium'
           )}
-          // aria-current={item.current ? 'page' : undefined}
         >
           לאירועי אוכל
         </button>
-        {((user.likes && user.likes >= 30) || user.isAdmin) && (
+        {((user.reviews && user.reviews >= 30) || user.isAdmin) && (
           <button
             // key={item.name}
             onClick={() => navigate(`/addRecipe`)}
@@ -52,7 +51,6 @@ const Panel = () => {
               'text-gray-300 hover:bg-gray-700 hover:text-white',
               'rounded-md px-3 py-2 text-sm font-medium'
             )}
-            // aria-current={item.current ? 'page' : undefined}
           >
             הוסף מתכון
           </button>
@@ -90,6 +88,12 @@ const Panel = () => {
               </MenuItem>
               <MenuItem
                 className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                onClick={() => navigate(`/allReviews`)}
+              >
+                כל הביקורות
+              </MenuItem>
+              <MenuItem
+                className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                 onClick={() => navigate(`/graphs`)}
               >
                 גרפים ונתונים
@@ -108,15 +112,22 @@ const Panel = () => {
         <div className="border-t border-gray-700 pb-3 pt-4">
           <div className="flex items-center px-5">
             <div className="flex-shrink-0">
-              <img className="h-10 w-10 rounded-full" src="" alt="" />
+              {/* <img className="h-10 w-10 rounded-full" src="" alt="" /> */}
+              <div className="flex flex-shrink-0 self-start cursor-pointer">
+                <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
+                  <p className="text-xl text-white">
+                    {user.userName ? user.userName[0] : ''}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="ml-3">
               <div className="text-base font-medium leading-none text-white">
                 {user.userName}
               </div>
-              <div className="text-sm font-medium leading-none text-gray-400">
+              {/* <div className="text-sm font-medium leading-none text-gray-400">
                 {user.email}
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="mt-3 space-y-1 px-2">
@@ -163,6 +174,12 @@ const Panel = () => {
                     onClick={() => navigate(`/personalRecipe/${user.userId}`)}
                   >
                     מתכונים ששיתפת
+                  </MenuItem>
+                  <MenuItem
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                    onClick={() => navigate(`/personalReviews`)}
+                  >
+                    ביקורות שנתת
                   </MenuItem>
                 </MenuList>
               </Menu>

@@ -6,6 +6,7 @@ import {
   deleteUserDal,
   getUsers,
   incrementLike,
+  getUserByEmail,
 } from '../dal/dalUsers';
 import { Register, SignInInput } from '../interface/interfacesUsers';
 import { decrypt } from '../hash';
@@ -45,27 +46,27 @@ export const serviceUsers = {
       const { email, update } = input;
       const updateUser = await updateUserDal(email, update, token);
       if (updateUser) return updateUser;
-      return 'user not found';
+      return 'כתובת אימייל לא נכונה';
     },
     deleteUser: async (email: string, token:string) => {
       const deleteUser = await deleteUserDal(email, token);
       if (deleteUser) return deleteUser;
-      return 'user not found';
+      return 'כתובת אימייל לא נכונה';
     },
     getUsers: async () => {
       const users = await getUsers();
       if (users) return users;
-      return 'users not found';
+      return 'אין משתמשים במאגר';
     },
-    // getUserByEmail: async (email: string) => {
-    //   const user = await getUserByEmail(email);
-    //   if (user) return user;
-    //   return 'user not found';
-    // },
+    getUserByEmail: async (email: string) => {
+      const user = await getUserByEmail(email);
+      if (user) return user;
+      return 'user not found';
+    },
     incrementLike: async (email: string) => {
       const increment = await incrementLike(email);
       if (increment) return increment;
-      return 'user not found';
+      return 'כתובת אימייל לא נכונה';
     },
   },
 };

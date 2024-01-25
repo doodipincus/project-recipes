@@ -33,11 +33,10 @@ const Skeleton = () => {
             </div>
             <div className="p-6 pt-0">
               <div className="relative mt-8 flex items-center gap-x-4">
-                <img
-                  src="&nbsp;"
-                  alt="&nbsp;"
-                  className="h-10 w-10 rounded-full bg-gray-50"
-                />
+                <div className="flex flex-shrink-0 self-start cursor-pointer">
+                  <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                  </div>
+                </div>
                 <div className="text-sm leading-6">
                   <div className="block w-56 h-3 mb-4 font-sans text-5xl antialiased font-semibold leading-tight tracking-normal bg-gray-300 rounded-full text-inherit">
                     &nbsp;

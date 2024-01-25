@@ -12,7 +12,7 @@ import { useAtom, useAtomValue } from 'jotai';
 // import CartNotFound from '../cart/cartNotFound/CartNotFound';
 import { useEffect } from 'react';
 import Loading from './loading/Loading';
-import { lodingAtom } from '../utils/atoms';
+import { loadingAtom } from '../utils/atoms';
 const Layout = () => {
   //   const [productsFromDb, setProducts] = useAtom(productsListAtom);
   //   const [categoriesFromDb, setCategories] = useAtom(categoriesListAtom);
@@ -27,7 +27,7 @@ const Layout = () => {
   //       myProductsAndCategories();
   //     }
   //   }, [productsFromDb, categoriesFromDb]);
-  const loding = useAtomValue(lodingAtom);
+  const loading = useAtomValue(loadingAtom);
 
   return (
     <div>
@@ -35,7 +35,7 @@ const Layout = () => {
       {/* <Cart /> */}
       {/* <CartNotFound /> */}
       {/* {a?<Loading />: <Outlet />} */}
-      {loding && <Loading />}
+      {loading && <Loading />}
 
       <Outlet />
     </div>

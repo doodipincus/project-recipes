@@ -2,25 +2,7 @@ import { DataTypes } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { sequelize } from './seqPG';
 import { Model } from 'sequelize';
-
-
-export interface UserAttributes {
-  email: string;
-  password: string;
-  user_name: string;
-  isAdmin: boolean;
-  likes: number;
-  shared:number
-  user_id: string;
-}
-
-interface UserInstance {
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-
-interface UserBack extends UserInstance, UserAttributes { }
+import { UserAttributes, UserBack } from '../interface/interfacesUsers';
 
 
 export const User = sequelize.define<Model<UserBack, UserAttributes>>(
@@ -45,7 +27,7 @@ export const User = sequelize.define<Model<UserBack, UserAttributes>>(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    likes: {
+    reviews: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -60,7 +42,6 @@ export const User = sequelize.define<Model<UserBack, UserAttributes>>(
       allowNull: false,
       defaultValue: false,
     },
-
   },
   {
     tableName: 'users',
@@ -74,7 +55,7 @@ export const User = sequelize.define<Model<UserBack, UserAttributes>>(
 export const createTableUsers = async () => {
   try {
     console.log('Creating table users');
-    await User.sync({alter: true})
+    await User.sync({ alter: true })
   } catch (error) {
     console.error(error);
   }

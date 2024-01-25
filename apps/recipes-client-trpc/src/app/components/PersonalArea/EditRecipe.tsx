@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
 import { useAtom, useSetAtom } from 'jotai';
-import { allRecipesAtom, lodingAtom, userAtom } from '../../utils/atoms';
+import { allRecipesAtom, loadingAtom } from '../../utils/atoms';
 import { RecipesInput, Recipes, RecipeBack } from '../../interfaces/recipes';
 import { useParams } from 'react-router-dom';
 import FormRecipe from '../recipes/FormRecipe';
@@ -26,7 +25,9 @@ const initialState: RecipesInput = {
 export default function EditRecipe() {
   const [recipeEdited, setRecipeEdited] = useState<RecipesInput>(initialState);
   const [allRecipes] = useAtom(allRecipesAtom);
-  const [loading, setLoading] = useAtom(lodingAtom);
+  const setLoadingGlobal = useSetAtom(loadingAtom);
+  const [errorFromServer, setErrorFromServer] = useState<string>('');
+
   const { id } = useParams();
 
   const notifyEdit = () => {
@@ -48,18 +49,23 @@ export default function EditRecipe() {
   const editRecipe = async (newRecipeEdited: RecipesInput) => {
     if (id) {
       try {
-        setLoading(true);
+        setLoadingGlobal(true);
         const res = await trpc.recipes.updateRecipe.mutate({
           id: id,
           update: newRecipeEdited,
         });
         if (res && typeof res !== 'string') {
           console.log(res);
-          setLoading(false);
+          setLoadingGlobal(false);
           notifyEdit();
+        }
+        if (res && typeof res === 'string') {
+          setLoadingGlobal(false);
+          setErrorFromServer(res);
         }
       } catch (error) {
         console.error(error);
+        setLoadingGlobal(false);
       }
     }
   };
@@ -86,20 +92,30 @@ export default function EditRecipe() {
 
   console.log(recipeEdited);
 
+  const hasEmpty = Object.values(recipeEdited).includes('');
+  console.log(hasEmpty);
+
   return (
     <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
       <FormRecipe
         props={{ recipe: recipeEdited, setRecipe: setRecipeEdited }}
       />
       <div className="cursor-pointer mx-auto mt-16 max-w-xl sm:mt-20">
-        <div
-          className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        <button
+          type="submit"
           onClick={send}
+          disabled={hasEmpty}
+          className={
+            hasEmpty
+              ? 'cursor-not-allowed block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+              : 'cursor-pointerblock w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+          }
         >
-          שלח מתכון
-        </div>
+          עדכן מתכון
+        </button>
       </div>
-<AlertSecces/>
+      <AlertSecces />
+      {errorFromServer && <p>{errorFromServer}</p>}
     </div>
   );
 }

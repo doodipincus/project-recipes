@@ -14,7 +14,7 @@ export const allRecipesAtom = atom<RecipeBack[]>([]);
 
 export const modalRegisterAtom = atom(false);
 
-export const lodingAtom = atom(false);
+export const loadingAtom = atom(false);
 
 export const userIsLoggedInAtom = atom(false);
 
@@ -25,7 +25,7 @@ type User = {
   userId: string;
   userName: string;
   isAdmin: boolean;
-  likes: number;
+  reviews: number;
   shared: number;
   createdAt: string | undefined;
   updatedAt: string | undefined;

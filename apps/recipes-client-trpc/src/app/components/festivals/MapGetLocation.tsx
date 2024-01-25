@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { fromLonLat } from 'ol/proj';
 import { Geometry, Point } from 'ol/geom';
 import { Geolocation as OLGeoLoc } from 'ol';
@@ -10,6 +10,7 @@ import {
   RStyle,
   useOL,
   RPopup,
+  ROverlay,
 } from 'rlayers';
 import BaseEvent from 'ol/events/Event';
 
@@ -23,6 +24,8 @@ export default function MapGetLocation(): JSX.Element {
   const [accuracy, setAccuracy] = React.useState(
     undefined as Geometry | undefined
   );
+  const [hoveredLocation, setHoveredLocation] = useState<Boolean>(false);
+
   // Low-level access to the OpenLayers API
   const { map } = useOL();
 
@@ -74,10 +77,16 @@ export default function MapGetLocation(): JSX.Element {
               }
             }
           }}
+          onPointerEnter={() => setHoveredLocation(true)}
+          onPointerLeave={() => setHoveredLocation(false)}
         >
-          <RPopup trigger="hover" positioning="bottom-center">
-            {<div style={{ backgroundColor: 'white' }}>אתה נמצא כאן</div>}
-          </RPopup>
+          {hoveredLocation && (
+            <ROverlay>
+              <div className="p-4 rounded-lg shadow-md bg-gray-100">
+                <strong>המיקום שלך</strong>
+              </div>
+            </ROverlay>
+          )}
         </RFeature>
         <RFeature geometry={accuracy}></RFeature>
       </RLayerVector>

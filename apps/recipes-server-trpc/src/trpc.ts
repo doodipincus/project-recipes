@@ -1,6 +1,10 @@
 import { initTRPC } from '@trpc/server';
 import { CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { adminVerified, likesVerified, sharedVerified, privetVerified } from './jwtMiddlware';
+import { likesVerified } from './JWTmiddlware/likes';
+import { sharedVerified } from './JWTmiddlware/shared';
+import { adminVerified } from './JWTmiddlware/admin';
+import { privetVerified } from './JWTmiddlware/privet';
+
 
 
 export const createContext = (_ops: CreateNextContextOptions) => {

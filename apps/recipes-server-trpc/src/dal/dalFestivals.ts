@@ -1,6 +1,7 @@
-import { Festivals, FestivalsInput } from '../interface/interfacesFestivals';
+import { FestivalsInput } from '../interface/interfacesFestivals';
 import { Festival } from '../models/festivalModal';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { ee } from '../router/routerFestivals';
 
 
 export const createFestival = async (input: FestivalsInput) => {
@@ -13,13 +14,15 @@ export const createFestival = async (input: FestivalsInput) => {
         festival_creator_email: input.festivalCreatorEmail,
         festival_location: input.festivalLocation,
     });
-    console.log('test', create);
-    if (create) return create.dataValues;
+    if (create) {
+        ee.emit('add', create);
+        return create.dataValues;
+    }
 
 };
 
 export const getFestivals = async () => {
-    const festivals = (await Festival.findAll()).map((f) => {
+    const festivals = (await Festival.findAll({order:['festival_date_time']})).map((f) => {
         return f.dataValues;
     });
     console.log(festivals);

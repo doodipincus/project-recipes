@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import { lodingAtom, userAtom } from '../../utils/atoms';
-import { RecipesInput, Recipes } from '../../interfaces/recipes';
+import { loadingAtom, userAtom } from '../../utils/atoms';
+import { RecipesInput } from '../../interfaces/recipes';
 import FormRecipe from './FormRecipe';
 import { trpc } from '../../utils/trpc';
 import { toast } from 'react-toastify';
@@ -22,7 +22,7 @@ export default function AddRecipe() {
     instructions: '',
     preparation_time: '',
   });
-  const [loading, setLoading] = useAtom(lodingAtom);
+  const setLoadingGlobal = useSetAtom(loadingAtom);
 
   const notify = () => {
     toast.success('הוספת את המתכון בהצלחה!', {
@@ -34,15 +34,16 @@ export default function AddRecipe() {
     if (newRecipe.creator_email) {
       try {
         console.log('add', newRecipe);
-        setLoading(true);
-        const res = trpc.recipes.addRecipe.mutate(newRecipe);
+        setLoadingGlobal(true);
+        const res = await trpc.recipes.addRecipe.mutate(newRecipe);
         if (res) {
           console.log(res);
-          setLoading(false);
+          setLoadingGlobal(false);
           notify();
         }
       } catch (error) {
         console.error(error);
+        setLoadingGlobal(false);
       }
     }
   };
@@ -60,7 +61,9 @@ export default function AddRecipe() {
   useEffect(() => {
     addCrator();
   }, []);
+
   const hasEmpty = Object.values(newRecipe).includes('');
+
   console.log(hasEmpty);
 
   return (
@@ -68,18 +71,19 @@ export default function AddRecipe() {
       <FormRecipe props={{ recipe: newRecipe, setRecipe: setNewRecipe }} />
       <div className="mx-auto max-w-xl ">
         <button
-          className={
-            hasEmpty
-              ? 'block w-full rounded-md bg-gray-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-              : 'block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-          }
+          type="submit"
           onClick={addRecipe}
           disabled={hasEmpty}
+          className={
+            hasEmpty
+              ? 'cursor-not-allowed block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+              : 'cursor-pointer block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+          }
         >
           שלח מתכון
         </button>
       </div>
-<AlertSecces/>
+      <AlertSecces />
     </div>
   );
 }
