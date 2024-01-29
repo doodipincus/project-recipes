@@ -5,7 +5,7 @@ import AllRecipes from './recipes/AllRecipes';
 const Home = () => {
   return (
       <div className="flex">
-        <SideBar />
+        {/* <SideBar /> */}
         <AllRecipes />
       </div>
   );

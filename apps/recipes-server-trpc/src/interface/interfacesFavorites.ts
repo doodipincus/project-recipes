@@ -14,3 +14,12 @@ interface FavoriteInstance {
 
 
 export interface FavoriteBack extends FavoriteInstance, FavoriteAttributes { }
+
+
+export interface CreateFavorite{
+    recipe_id: string,
+    user_email: string,
+    user_name: string,
+    stars: number,
+    comment: string,
+}

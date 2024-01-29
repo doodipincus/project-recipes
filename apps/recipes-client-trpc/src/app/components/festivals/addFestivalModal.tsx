@@ -15,7 +15,7 @@ export default function AddFestivalModal() {
       {(user.isAdmin || (user.shared && user.shared > 10)) && (
         <button
           className={classNames(
-            'text-gray-300 hover:bg-gray-700 hover:text-white',
+            'text-gray-300 bg-gray-400 hover:bg-gray-700 hover:text-white',
             'block rounded-md px-3 py-2 text-base font-medium'
           )}
           onClick={handleOpen}
@@ -24,7 +24,7 @@ export default function AddFestivalModal() {
         </button>
       )}
       <Dialog
-        size="xl"
+        size="lg"
         open={open}
         handler={handleOpen}
         className="bg-transparent shadow-none"

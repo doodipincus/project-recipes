@@ -7,7 +7,7 @@ const Title = () => {
     <div className="flex justify-center">
       <div className="mx-auto max-w-2xl lg:mx-0">
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl flex justify-center">
-          אכול כפי יכולתך
+          מסיבת הטעמים
         </h2>
         <h4 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-1xl flex justify-center">
           אתר המתכונים הגדול בישראל

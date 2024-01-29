@@ -1,17 +1,21 @@
 import { Dialog } from '@material-tailwind/react';
 import RegisterDailog from './RegisterDailog';
 import { classNames } from '../../css/classes';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { modalRegisterAtom } from '../../utils/atoms';
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
 
 export default function RegisterModal() {
-  const [open, setOpen] = useState(false);
-  // const [open, setOpen] = useAtom(modalRegisterAtom);
-  console.log(open);  
-  
+  // const registerModal = useAtomValue(modalRegisterAtom);
+  const [open, setOpen] = useState<boolean>(false);
+  console.log(open);
+
   const handleOpen = () => setOpen((cur) => !cur);
+
+  // useEffect(() => {
+  //   setOpen(registerModal);
+  // }, [registerModal]);
+
 
   return (
     <>

@@ -8,12 +8,12 @@ export const serviceFavorites = {
     favorites: {
         getAllFavorites: async () => {
             const allFavorites = await getAllFavorites();
-            if (allFavorites) return allFavorites;
+            if (allFavorites.length) return allFavorites;
             return 'אין מתכונים במאגר';
         },
         getFavoritesbyUser: async (email: string) => {
             const favorites = await getFavoritesbyUser(email);
-            if (favorites) return favorites;
+            if (favorites.length) return favorites;
             return 'אין מתכונים אהובים למשתמש זה'
         },
         getFavoritesbyUserAndRecipe: async (email: string, recipe_id: string) => {
@@ -23,7 +23,7 @@ export const serviceFavorites = {
         },
         getFavoritesbyRecipe: async (recipe_id: string) => {
             const reviews = await getFavoritesbyRecipe(recipe_id);
-            if (reviews) return reviews;
+            if (reviews.length) return reviews;
             return 'אין דירוגים למתכון זה'
         },
         deleteFavorite: async (id: string) => {

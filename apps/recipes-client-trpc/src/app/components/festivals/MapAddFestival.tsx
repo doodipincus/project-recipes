@@ -3,13 +3,12 @@ import { fromLonLat, toLonLat } from 'ol/proj';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import 'ol/ol.css';
-import monument from '../maps/svg/monument.svg';
 import { RMap, ROSM, RLayerVector, RStyle, RFeature, RPopup } from 'rlayers';
 import { useAtom } from 'jotai';
 import { newFestivalAtom } from '../../utils/atoms';
+import locationIcon from './svg/iconLocation.svg'
+import foodIcon from './svg/addLocation.svg'
 
-const locationIcon =
-  'https://cdn.jsdelivr.net/npm/rlayers/examples/./svg/location.svg';
 
 // let unique_id = 1;
 
@@ -37,7 +36,7 @@ export default function MapAddFestival(): JSX.Element {
 
       <RLayerVector ref={vectorRef}>
         <RStyle.RStyle>
-          <RStyle.RIcon src={monument} />
+          <RStyle.RIcon src={foodIcon} />
         </RStyle.RStyle>
         {newFeature && (
           <RFeature key={newFeature.get('uid')} feature={newFeature}>

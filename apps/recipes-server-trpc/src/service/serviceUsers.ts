@@ -55,7 +55,7 @@ export const serviceUsers = {
     },
     getUsers: async () => {
       const users = await getUsers();
-      if (users) return users;
+      if (users.length) return users;
       return 'אין משתמשים במאגר';
     },
     getUserByEmail: async (email: string) => {

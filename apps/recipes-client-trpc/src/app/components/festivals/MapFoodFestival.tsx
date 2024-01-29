@@ -1,4 +1,4 @@
-import monument from '../maps/svg/monument.svg';
+import foodIcon from './svg/foodIcon.svg'
 import React, { useState } from 'react';
 import { fromLonLat } from 'ol/proj';
 import 'ol/ol.css';
@@ -25,7 +25,7 @@ export default function MapFoodFestival({
       <ROSM />
       <RLayerVector ref={vectorRef}>
         <RStyle.RStyle>
-          <RStyle.RIcon src={monument} />
+          <RStyle.RIcon src={foodIcon} />
         </RStyle.RStyle>
         {features.map((f, index) => (
           <RFeature

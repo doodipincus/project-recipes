@@ -13,11 +13,8 @@ import {
   ROverlay,
 } from 'rlayers';
 import BaseEvent from 'ol/events/Event';
+import locationIcon from './svg/iconLocation.svg'
 
-const locationIcon =
-  'https://cdn.jsdelivr.net/npm/rlayers/examples/./svg/location.svg';
-
-// // let unique_id = 1;
 
 export default function MapGetLocation(): JSX.Element {
   const [pos, setPos] = React.useState(new Point(fromLonLat([0, 0])));

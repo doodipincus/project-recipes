@@ -24,7 +24,10 @@ const ButtonsAndLogo = () => {
       >
         <img
           className="h-8 w-8"
-          src="/beer-svgrepo-com.svg"
+          src="beer-svgrepo-com.svg"
+          // src="../../../../public/tas.png"
+          // src="../../../../public/tasteParty.png"
+          // src="../../../../public/_f39d07f2-4065-4362-afd4-7d0e4c4627c2-removebg-preview.png"
           alt="Your Company"
         />
       </div>

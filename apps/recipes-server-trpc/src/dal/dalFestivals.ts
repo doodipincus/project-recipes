@@ -26,54 +26,22 @@ export const getFestivals = async () => {
         return f.dataValues;
     });
     console.log(festivals);
-    return festivals;
+    if(festivals) return festivals;
 };
 
-// export const getRecipeByCreator = async (email: string) => {
-//     const recipes = (await Recipe.findAll({
-//         where: {
-//             creator_email: email,
-//         },
-//     })).map((r) => {
-//         return r.dataValues;
-//     })
-//     if (recipes) return recipes;
-//     // return user;
-// };
-
-// export const updateRecipeDal = async (id: string, update: Recipes) => {
-//     const [affectedRows] = await Recipe.update(
-//         {
-//             update
-//         },
-//         {
-//             where: {
-//                 recipe_id: id,
-//             },
-//             returning: true,
-//         }
-//     );
-//     if (affectedRows) {
-//         const recipe = await Recipe.findOne({
-//             where: {
-//                 id: id,
-//             },
-//         });
-//         return recipe.dataValues;
-//     }
-//     return false
-// };
 
 export const deleteFestivalDal = async (id: string, token:string) => {
     const tokenObj = jwt.verify(
         token,
         process.env.SECRET_KEY_TOKEN as string,
       ) as JwtPayload;
-    await Festival.destroy({
+
+    const deleteFestival = await Festival.destroy({
         where: {
             festival_id: id,
             festival_creator_email: tokenObj.email,
         },
     });
-    return true;
+    if(deleteFestival) return true;
+    return false
 };

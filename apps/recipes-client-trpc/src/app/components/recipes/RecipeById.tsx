@@ -1,38 +1,48 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { allRecipesAtom, userAtom, userIsLoggedInAtom } from '../../utils/atoms';
+import {
+  allRecipesAtom,
+  userAtom,
+  userIsLoggedInAtom,
+} from '../../utils/atoms';
 import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { RecipeBack, Recipes } from '../../interfaces/recipes';
 import { formatDateTime } from '../../utils/date';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { classNames } from '../../css/classes';
-import Rating from './Rating';
-import PersonalRating from './PersonalRating';
+import Rating from '../rating/Rating';
+import PersonalRating from '../rating/PersonalRating';
 import { trpc } from '../../utils/trpc';
 import { FavoriteBack } from '../../interfaces/favorites';
-
+import MapRecipeById from './MapRecipeById';
 
 export default function Example() {
   const [allRecipes] = useAtom(allRecipesAtom);
   const [recipe, setRecipe] = useState<RecipeBack | undefined>();
-  const userIsLoggedIn = useAtomValue(userIsLoggedInAtom)
-  const user = useAtomValue(userAtom)
-  const [oldPersonalRating, setOldPersonalRating] = useState<FavoriteBack>()
+  const userIsLoggedIn = useAtomValue(userIsLoggedInAtom);
+  const user = useAtomValue(userAtom);
+  const [oldPersonalRating, setOldPersonalRating] = useState<FavoriteBack>();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [errorFromServer, setErrorFromServer] = useState('');
 
-const getPersonalRating = async () =>{
-  if(user.email && id){
-    try {
-      const res = await trpc.favorites.getFavoritesByUserAndRecipe.query({email:user.email, recipe_id: id});  
-      if(res && typeof res !== 'string'){
-      setOldPersonalRating(res)
+  const getPersonalRating = async () => {
+    if (user.email && id) {
+      try {
+        const res = await trpc.favorites.getFavoritesByUserAndRecipe.query({
+          email: user.email,
+          recipe_id: id,
+        });
+        if (res && typeof res !== 'string') {
+          setOldPersonalRating(res);
+          console.log('res', res);
+        } else if (res && typeof res === 'string') {
+          setErrorFromServer(res);
+          console.log('res', res);
+        }
+      } catch (error) {}
     }
-    } catch (error) {
-      
-    }
-  }
-}
+  };
 
   useEffect(() => {
     if (id) {
@@ -41,9 +51,11 @@ const getPersonalRating = async () =>{
       console.log(newRecipe);
       setRecipe(newRecipe);
     }
-    getPersonalRating()
+    getPersonalRating();
   }, []);
-  
+
+  console.log(errorFromServer);
+
   return (
     <div className="bg-white">
       <div className="pt-6">
@@ -57,7 +69,6 @@ const getPersonalRating = async () =>{
             />
           </div>
         </div>
-
         {/* Product info */}
         <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
           <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
@@ -66,8 +77,10 @@ const getPersonalRating = async () =>{
             </h1>
           </div>
 
-          {/* Options */}
 
+
+
+          {/* Options */}
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
             {/* Description and details */}
             <div>
@@ -97,9 +110,19 @@ const getPersonalRating = async () =>{
             {/* Reviews */}
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <Rating
-                props={{ rating: recipe?.rating, reviews: recipe?.num_reviews, id: recipe?.recipe_id}}
+                props={{
+                  rating: recipe?.rating,
+                  reviews: recipe?.num_reviews,
+                  id: recipe?.recipe_id,
+                }}
               />
-              {(id && userIsLoggedIn) && <PersonalRating id={id} rating={oldPersonalRating?.stars} comment={oldPersonalRating?.comment}/>}
+              {id && userIsLoggedIn && (
+                <PersonalRating
+                  id={id}
+                  rating={oldPersonalRating?.stars}
+                  comment={oldPersonalRating?.comment}
+                />
+              )}
             </div>
             <div className="mt-10">
               <div className="relative mt-8 flex items-center gap-x-4">
@@ -139,6 +162,8 @@ const getPersonalRating = async () =>{
               </div>
             </div>
           </div>
+          <MapRecipeById/>
+
         </div>
       </div>
     </div>

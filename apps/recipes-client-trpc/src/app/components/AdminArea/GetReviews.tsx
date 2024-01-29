@@ -60,7 +60,7 @@ const GetReviews = () => {
                     <tr className="font-semibold text-[0.95rem] text-secondary-dark">
                       <th className="pb-3 text-start min-w-[175px]">אימייל</th>
                       <th className="pb-3 text-end min-w-[100px]">שם משתמש</th>
-                      <th className="pb-3 text-start min-w-[175px]">עוגה</th>
+                      <th className="pb-3 text-end min-w-[175px]">עוגה</th>
 
                       <th className="pb-3 pr-12 text-end min-w-[175px]">
                         ביקורת 

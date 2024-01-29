@@ -18,12 +18,12 @@ export const serviceRecipe = {
         },
         getAllRecipes: async () => {
             const recipes = await getRecipes();
-            if (recipes) return recipes;
+            if (recipes.length) return recipes;
             return 'recipes not found';
         },
         getRecipesByCreator: async (email: string) => {
             const recipes = await getRecipeByCreator(email);
-            if (recipes) return recipes;
+            if (recipes.length) return recipes;
             return 'recipes not found';
         },
         deleteRecipe: async (id: string, token) => {

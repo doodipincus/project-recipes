@@ -20,7 +20,7 @@ export const getUsers = async () => {
     return user.dataValues;
   });
   console.log(users);
-  return users;
+  if(users) return users;
 };
 
 export const getUserByEmail = async (email: string) => {
@@ -47,7 +47,7 @@ export const updateUserDal = async (email: string, update: Update, token: string
       },
       {
         where: {
-          email: email,
+          email: tokenObj.email,
         },
         returning: true,
       }

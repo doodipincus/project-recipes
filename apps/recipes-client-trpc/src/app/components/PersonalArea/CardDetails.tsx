@@ -1,4 +1,11 @@
 import { Details } from '../../interfaces/details';
+import admin from './svg/admin-network-svgrepo-com.svg'
+import userName from './svg/star-svgrepo-com.svg'
+import date from './svg/date-2-svgrepo-com.svg'
+import email from './svg/email-address-svgrepo-com.svg'
+import recipe from './svg/recipe-svgrepo-com.svg'
+import star from './svg/star-svgrepo-com.svg'
+
 
 const CardDetails = ({ details }: { details: Details }) => {
   return (

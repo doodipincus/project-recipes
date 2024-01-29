@@ -1,4 +1,3 @@
-import FestivalTable from './FestivalsTable';
 import MapFoodFestival from './MapFoodFestival';
 import AddFestivalModal from './addFestivalModal';
 import { loadingAtom } from '../../utils/atoms';
@@ -15,23 +14,24 @@ import CardFestival from './CardFestival';
 export default function FoodFestivals() {
   const [features, setFeatures] = useState<festivalsAndFeatures[]>([]);
   const [festivals, setFestivals] = useState<FestivalBack[]>([]);
+  const [oldFestivals, setOldFestivals] = useState<FestivalBack[]>([]);
   const setLoadingGlobal = useSetAtom(loadingAtom);
   const [errorFromServer, setErrorFromServer] = useState<string>('');
 
-  const addFeatureIntoFestivals = (res: FestivalBack[]) => {
-    console.log('addFeatureIntoFest', res);
+  const addFeatureIntoFestivals = (f: FestivalBack) => {
+    console.log('addFeatureIntoFest', f);
 
-    const festivalsAndFeatures = res.map((f: FestivalBack) => {
-      const [lon, lat] = f.festival_location;
-      return {
-        festival: f,
-        feature: new Feature({
-          geometry: new Point(fromLonLat([lon, lat])),
-          name: f.festival_name,
-        }),
-      };
-    });
-    setFeatures(festivalsAndFeatures);
+    const [lon, lat] = f.festival_location;
+
+    const festivalAndFeature = {
+      festival: f,
+      feature: new Feature({
+        geometry: new Point(fromLonLat([lon, lat])),
+        name: f.festival_name,
+      }),
+    };
+
+    setFeatures((prev) => [...prev, festivalAndFeature]);
   };
 
   const getFestivals = async () => {
@@ -40,11 +40,16 @@ export default function FoodFestivals() {
       const res = await trpc.festivals.getFestivals.query();
       if (res?.length && typeof res !== 'string') {
         console.log('festivals', res);
-        setFestivals(res);
+
         setLoadingGlobal(false);
-        addFeatureIntoFestivals(res);
-      }
-      if (res && typeof res === 'string') {
+
+        res.forEach((f) => {
+          if (new Date(f.festival_date_time) >= new Date()) {
+            setFestivals((prev) => [...prev, f]);
+            addFeatureIntoFestivals(f);
+          } else setOldFestivals((prev) => [...prev, f]);
+        });
+      } else if (res && typeof res === 'string') {
         setLoadingGlobal(false);
         setErrorFromServer(res);
       }
@@ -54,23 +59,26 @@ export default function FoodFestivals() {
     }
   };
 
+  console.log('oldFestivals', oldFestivals);
+
   const subscribeToRecipes = async () => {
     try {
       await trpc.festivals.onAdd.subscribe(undefined, {
         onData: (data) => {
-          setFestivals((prev) => [...prev, data]);
-          // addFeatureIntoFestivals();
-          const [lon, lat] = data.festival_location;
-          setFeatures((prev) => [
-            ...prev,
-            {
-              festival: data,
-              feature: new Feature({
-                geometry: new Point(fromLonLat([lon, lat])),
-                name: data.festival_name,
-              }),
-            },
-          ]);
+          if (new Date(data.festival_date_time) >= new Date()) {
+            setFestivals((prev) => [...prev, data]);
+            const [lon, lat] = data.festival_location;
+            setFeatures((prev) => [
+              ...prev,
+              {
+                festival: data,
+                feature: new Feature({
+                  geometry: new Point(fromLonLat([lon, lat])),
+                  name: data.festival_name,
+                }),
+              },
+            ]);
+          } else setOldFestivals((prev) => [...prev, data]);
         },
         onError: (err) => {
           console.error('Subscription error:', err);
@@ -92,6 +100,8 @@ export default function FoodFestivals() {
     console.log('fua', features);
   }, [festivals, features]);
 
+  console.log(errorFromServer);
+
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="bg-gray-100 lg:w-1/3 lg:h-full">
@@ -104,8 +114,10 @@ export default function FoodFestivals() {
             <CardFestival key={festival.festival_id} festival={festival} />
           ))}
         </div>
-
-        <AddFestivalModal />
+        <div className="relative flex  items-center justify-center  ">
+      
+          <AddFestivalModal />
+        </div>
       </div>
     </div>
   );

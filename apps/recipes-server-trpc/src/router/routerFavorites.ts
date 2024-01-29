@@ -3,6 +3,7 @@ import { adminProcedure, privetProcedure, publicProcedure, router } from '../trp
 import EventEmitter from 'events';
 import { observable } from '@trpc/server/observable';
 import { serviceFavorites } from '../service/serviceFavorites';
+import { FavoriteBack } from '../interface/interfacesFavorites';
 
 export const ee = new EventEmitter();
 
@@ -55,7 +56,20 @@ export const favoritesRouter = router({
     } catch (err) {
       console.error(err);
     }
-  })
+  }),
+
+  onAdd: publicProcedure.subscription(() => {
+    return observable<FavoriteBack>((emit) => {
+      const onAdd = (data: FavoriteBack) => {
+        emit.next(data);
+      };
+      ee.on('add', onAdd);
+
+      return () => {
+        ee.off('add', onAdd);
+      };
+    });
+  }),
 
 //   onAdd: publicProcedure.subscription(() => {
 //     return observable<FestivalBack>((emit) => {

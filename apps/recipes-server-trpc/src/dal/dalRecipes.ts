@@ -6,6 +6,7 @@ import { Sequelize } from "sequelize";
 import { User } from "../models/userModel";
 import { sequelize } from "../models/seqPG";
 import { Favorite } from "../models/favoriteResipesModel";
+import { createFavorite } from "./dalFavorite";
 
 
 export const createRecipe = async (input: AddRecipes) => {
@@ -33,7 +34,7 @@ export const getRecipes = async () => {
         return r.dataValues;
     });
     console.log(recipes);
-    return recipes;
+    if(recipes) return recipes;
 };
 
 export const getRecipeByCreator = async (email: string) => {
@@ -93,13 +94,14 @@ export const deleteRecipeDal = async (id: string, token: string) => {
         process.env.SECRET_KEY_TOKEN as string,
     ) as JwtPayload;
 
-    await Recipe.destroy({
+    const deleteRecipe = await Recipe.destroy({
         where: {
             recipe_id: id,
             creator_email: tokenObj.email,
         },
     });
-    return true;
+    if(deleteRecipe) return true;
+    return false;
 };
 
 
@@ -134,15 +136,23 @@ export const addRatingDal = async (id: string, email: string, user_name: string,
                     }
                 }
             )
-            await Favorite.create({
+            // const create = await Favorite.create({
+            //     recipe_id: id,
+            //     user_email: email,
+            //     user_name: user_name,
+            //     stars: newRating,
+            //     comment: comment,
+            // }) 
+            const create = await createFavorite({
                 recipe_id: id,
                 user_email: email,
                 user_name: user_name,
                 stars: newRating,
                 comment: comment,
             })
+            if (create) return create;
+
         }
-        return true;
     } else {
         const [affectedRows] = await Recipe.update(
             {

@@ -10,9 +10,9 @@ export default function SignInModal() {
   const handleOpen = () => setOpen((cur) => !cur);
   const registerModal = useAtomValue(modalRegisterAtom);
   
-  useEffect(() => {
-    setOpen(false);
-  }, [registerModal]);
+  // useEffect(() => {
+  //   setOpen(false);
+  // }, [registerModal]);
 
   return (
     <>

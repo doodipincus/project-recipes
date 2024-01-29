@@ -8,6 +8,7 @@ import AlertSecces from '../../utils/AlertSecces';
 import { useState } from 'react';
 import { FavoriteBack } from '../../interfaces/favorites';
 import { useNavigate } from 'react-router-dom';
+import StarsRating from '../rating/StarsRating';
 
 const RowReview = ({ review }: { review: FavoriteBack }) => {
   const setLoadingGlobal = useSetAtom(loadingAtom);
@@ -80,9 +81,7 @@ const RowReview = ({ review }: { review: FavoriteBack }) => {
           </span>
         </td>
         <td className="p-3 pr-12 text-end">
-          <span className="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">
-            {review.stars}
-          </span>
+          <StarsRating numRating={review.stars} />
         </td>
         <td className="pr-0 text-start">
           <span className="font-semibold text-light-inverse text-md/normal">

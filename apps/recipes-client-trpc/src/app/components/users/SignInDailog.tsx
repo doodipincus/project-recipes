@@ -14,7 +14,8 @@ import AlertSecces from '../../utils/AlertSecces';
 
 const SignInDailog = () => {
   const [signIn, setSignIn] = useAtom(signInAtom);
-  const setRegisterModal = useSetAtom(modalRegisterAtom);
+  const [registerModal, setRegisterModal] = useAtom(modalRegisterAtom);
+  // const setRegisterModal = useSetAtom(modalRegisterAtom);
   const setUserIsLoggedIn = useSetAtom(userIsLoggedInAtom);
   const [checkboks, setCheckboxes] = useState(true);
   const setLoadingGlobal = useSetAtom(loadingAtom);
@@ -68,6 +69,10 @@ const SignInDailog = () => {
 
   const hasEmpty = Object.values(signIn).includes('');
   console.log(hasEmpty);
+
+  useEffect(()=>{
+    console.log(registerModal);
+  },[registerModal])
 
   return (
     <body className="bg-white rounded-lg py-5">

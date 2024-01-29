@@ -1,16 +1,33 @@
+import { CreateFavorite } from "../interface/interfacesFavorites";
 import { Favorite } from "../models/favoriteResipesModel";
+import { ee } from "../router/routerFavorites";
+
+export const createFavorite = async (input:CreateFavorite) =>{
+    const create = await Favorite.create({
+        recipe_id: input.recipe_id,
+        user_email: input.user_email,
+        user_name: input.user_name,
+        stars: input.stars,
+        comment: input.comment,
+    })
+    if (create) {
+        ee.emit('add', create);
+        return create.dataValues;
+    }
+}
+
 
 
 
 export const getAllFavorites = async () => {
-    const festivals = (await Favorite.findAll()).map((f) => f.dataValues);
-    console.log(festivals);
-    return festivals;
+    const favorites = (await Favorite.findAll()).map((f) => f.dataValues);
+    console.log(favorites);
+    return favorites;
 };
 
 
 export const getFavoritesbyUser = async (email: string) => {
-    const festivals = (await Favorite.findAll({
+    const favorites = (await Favorite.findAll({
         where: {
             user_email: email
         },
@@ -18,19 +35,20 @@ export const getFavoritesbyUser = async (email: string) => {
     })).map((f) => {
         return f.dataValues;
     });
-    console.log(festivals);
-    return festivals;
+    console.log(favorites);
+    if(favorites) return favorites;
+    
 };
 
 export const getFavoritesbyUserAndRecipe = async (email: string, recipe_id: string) => {
-    const festival = (await Favorite.findOne({
+    const favorite = (await Favorite.findOne({
         where: {
             user_email: email,
             recipe_id: recipe_id
         },
     }))
-    console.log(festival);
-    return festival.dataValues
+    console.log(favorite);
+    if(favorite) return favorite.dataValues
 };
 
 export const getFavoritesbyRecipe = async (recipe_id: string) => {
@@ -40,7 +58,7 @@ export const getFavoritesbyRecipe = async (recipe_id: string) => {
         },
     })).map((f) => f.dataValues)
     console.log(reviews);
-    return reviews
+    if(reviews) return reviews
 };
 
 

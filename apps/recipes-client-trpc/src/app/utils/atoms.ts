@@ -12,11 +12,13 @@ export const signInAtom = atom({ email: '', password: '' });
 
 export const allRecipesAtom = atom<RecipeBack[]>([]);
 
-export const modalRegisterAtom = atom(false);
+export const modalRegisterAtom = atom<boolean>(false);
 
 export const loadingAtom = atom(false);
 
 export const userIsLoggedInAtom = atom(false);
+
+export const openReviews = atom(false);
 
 
 type User = {
@@ -46,5 +48,3 @@ export const newFestivalAtom = atom({
   festivalLocation: <Location>[],
 });
 
-
-// festival_id: string;

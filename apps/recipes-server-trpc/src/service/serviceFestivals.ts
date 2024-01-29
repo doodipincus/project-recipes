@@ -7,7 +7,7 @@ export const serviceFestivals = {
     festivals: {
         getAllFestivals: async () => {
             const festivals = await getFestivals();
-            if (festivals) return festivals;
+            if (festivals.length) return festivals;
             return 'אין פסטיבלים במאגר';
         },
         addFestival: async (festivalInput: FestivalsInput) => {
