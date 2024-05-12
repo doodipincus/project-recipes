@@ -4,7 +4,7 @@ import AllRecipes from './recipes/AllRecipes';
 
 const Home = () => {
   return (
-      <div className="flex">
+      <div className="flex justify-center">
         {/* <SideBar /> */}
         <AllRecipes />
       </div>

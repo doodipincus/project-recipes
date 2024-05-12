@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   userIsLoggedInAtom,
   signInAtom,
@@ -9,19 +9,18 @@ import {
   loadingAtom,
 } from '../../utils/atoms';
 import { useEffect, useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import AlertSecces from '../../utils/AlertSecces';
+import { resetSignIn } from '../../utils/reset';
+import { SIGN_IN } from '../../utils/mutation';
 
-const SignInDailog = () => {
+const SignInDailog = ({ handleOpen }: { handleOpen: () => void }) => {
   const [signIn, setSignIn] = useAtom(signInAtom);
-  const [registerModal, setRegisterModal] = useAtom(modalRegisterAtom);
-  // const setRegisterModal = useSetAtom(modalRegisterAtom);
+  const setRegisterModal = useSetAtom(modalRegisterAtom);
   const setUserIsLoggedIn = useSetAtom(userIsLoggedInAtom);
   const [checkboks, setCheckboxes] = useState(true);
   const setLoadingGlobal = useSetAtom(loadingAtom);
-
-  // const setUser = useSetAtom(userAtom);
-  const [user, setUser] = useAtom(userAtom);
+  const setUser = useSetAtom(userAtom);
 
   const notify = () => {
     toast.success('!התחברת בהצלחה', {
@@ -29,17 +28,7 @@ const SignInDailog = () => {
     });
   };
 
-  const SIGN_IN = gql`
-    mutation MyMutation($input: LoginInput!) {
-      login(input: $input) {
-        loginRespon {
-          jwtToken
-          userDetails
-        }
-      }
-    }
-  `;
-
+ 
   const [signInToServer, { error, data }] = useMutation(SIGN_IN);
 
   const send = () => {
@@ -56,6 +45,7 @@ const SignInDailog = () => {
       setUserIsLoggedIn(true);
       setUser(data.login.loginRespon.userDetails);
       localStorage.setItem('TOKEN', data.login.loginRespon.jwtToken);
+      setSignIn(resetSignIn)
       // if (checkboks) {
       //   localStorage.setItem('email', data.login.loginRespon.userDetails.email);
       //   localStorage.setItem('password', data.login.loginRespon.userDetails.password);
@@ -69,10 +59,6 @@ const SignInDailog = () => {
 
   const hasEmpty = Object.values(signIn).includes('');
   console.log(hasEmpty);
-
-  useEffect(()=>{
-    console.log(registerModal);
-  },[registerModal])
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -175,7 +161,10 @@ const SignInDailog = () => {
                   אינך רשום?{' '}
                   <div
                     className="font-bold text-grey-700 inline cursor-pointer"
-                    onClick={() => setRegisterModal(true)}
+                    onClick={() => {
+                      handleOpen();
+                      setRegisterModal(true);
+                    }}
                   >
                     צור משתמש חדש
                   </div>

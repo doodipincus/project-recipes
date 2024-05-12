@@ -8,8 +8,6 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import { RecipeBack, Recipes } from '../../interfaces/recipes';
 import { formatDateTime } from '../../utils/date';
-import { StarIcon } from '@heroicons/react/20/solid';
-import { classNames } from '../../css/classes';
 import Rating from '../rating/Rating';
 import PersonalRating from '../rating/PersonalRating';
 import { trpc } from '../../utils/trpc';
@@ -46,15 +44,15 @@ export default function Example() {
 
   useEffect(() => {
     if (id) {
-      console.log(allRecipes);
+      // console.log(allRecipes);
       const newRecipe = allRecipes.find((r) => r.recipe_id === id);
-      console.log(newRecipe);
+      // console.log(newRecipe);
       setRecipe(newRecipe);
     }
     getPersonalRating();
   }, []);
 
-  console.log(errorFromServer);
+  // console.log(errorFromServer);
 
   return (
     <div className="bg-white">
@@ -132,38 +130,33 @@ export default function Example() {
                   }
                   className="hover:scale-110 overflow-hidden flex items-center"
                 >
-                  {/* <img
-                    src="kj"
-                    alt=""
-                    className="h-10 w-10 rounded-full bg-gray-50"
-                  /> */}
                   <div className="flex flex-shrink-0 self-start cursor-pointer">
-                    <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center m-2">
                       <p className="text-xl text-white">
                         {recipe?.creator_name[0]}
                       </p>
                     </div>
                   </div>
                   <div className="text-sm leading-6">
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold text-gray-900 text-base">
                       <span className="absolute inset-0" />
                       {recipe?.creator_name}
                     </p>
                   </div>
                 </button>
                 {recipe?.createdAt && (
-                  <div className="flex items-center gap-x-4 text-xs">
-                    <time dateTime={recipe.createdAt} className="text-gray-500">
+                  <div className="flex items-center gap-x-4 text-lg">
+                    <div className="text-gray-500">
                       {formatDateTime(recipe.createdAt)}
-                    </time>
+                    </div>
                     <p className="font-semibold text-">נוצר ב </p>
                   </div>
                 )}
               </div>
             </div>
           </div>
-          <MapRecipeById/>
 
+          <MapRecipeById country={recipe?.country_of_origin}/>
         </div>
       </div>
     </div>

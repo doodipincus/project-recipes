@@ -8,6 +8,8 @@ import {
   createHttpLink,
 } from '@apollo/client';
 // import { automaticSignIn } from './utils/automaticSignIn';
+import { Provider } from "react-redux";
+import { store } from "./utils/redux/store";
 
 export default function App() {
   const [queryClient] = useState(() => new QueryClient());
@@ -25,10 +27,12 @@ export default function App() {
 
 
   return (
+    <Provider store={store}>
     <QueryClientProvider client={queryClient}>
       <ApolloProvider client={client}>
         <Router />
       </ApolloProvider>
     </QueryClientProvider>
+    </Provider>
   );
 }

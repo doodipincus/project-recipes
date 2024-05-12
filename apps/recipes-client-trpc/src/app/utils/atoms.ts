@@ -14,6 +14,8 @@ export const allRecipesAtom = atom<RecipeBack[]>([]);
 
 export const modalRegisterAtom = atom<boolean>(false);
 
+export const modalSignInAtom = atom<boolean>(false);
+
 export const loadingAtom = atom(false);
 
 export const userIsLoggedInAtom = atom(false);
@@ -21,9 +23,8 @@ export const userIsLoggedInAtom = atom(false);
 export const openReviews = atom(false);
 
 
-type User = {
+export type User = {
   email: string;
-  password: string;
   userId: string;
   userName: string;
   isAdmin: boolean;

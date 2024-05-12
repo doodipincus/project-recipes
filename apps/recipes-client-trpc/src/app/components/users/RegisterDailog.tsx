@@ -2,45 +2,33 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAtom, useSetAtom } from 'jotai';
 import {
-  userIsLoggedInAtom,
-  userAtom,
   registerAtom,
   loadingAtom,
+  modalSignInAtom,
+  modalRegisterAtom,
 } from '../../utils/atoms';
-import { useEffect, useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
+import { useEffect } from 'react';
+import { useMutation } from '@apollo/client';
 import AlertSecces from '../../utils/AlertSecces';
 import { v4 as uuidv4 } from 'uuid';
+import { resetRegister } from '../../utils/reset';
+import { REGISTER } from '../../utils/mutation';
+import { useAppDispatch } from '../../utils/redux/hooks';
+import { setOpenRegister } from '../../utils/redux/sliceRegister';
+import { setOpenSignIn } from '../../utils/redux/sliceSignIn';
 
 const RegisterDailog = () => {
   const [register, setRegister] = useAtom(registerAtom);
-  const setUserIsLoggedIn = useSetAtom(userIsLoggedInAtom);
-  const setUser = useSetAtom(userAtom);
-  const [checkboks, setCheckboxes] = useState(true);
   const setLoadingGlobal = useSetAtom(loadingAtom);
+  // const [openSignIn, setOpenSignIn] = useAtom(modalSignInAtom);
+  // const [openRegister, setOpenRegister] = useAtom(modalRegisterAtom);
+  const dispatch = useAppDispatch()
 
   const notify = () => {
-    toast.success("You've logged in successfully!", {
+    toast.success("נרשמת בהצלחה!", {
       theme: 'colored',
     });
   };
-
-  const REGISTER = gql`
-    mutation MyMutation($input: CreateUserInput!) {
-      createUser(input: $input) {
-        user {
-          createdAt
-          email
-          isAdmin
-          reviews
-          shared
-          updatedAt
-          userId
-          userName
-        }
-      }
-    }
-  `;
 
   const [sendRegistertoServer, { data, error }] = useMutation(REGISTER);
 
@@ -76,13 +64,12 @@ const RegisterDailog = () => {
       console.log(data);
       console.log(data.createUser.user);
       setLoadingGlobal(false);
-      setUserIsLoggedIn(true);
-      setUser(data.createUser.user);
       notify();
-      // if (checkboks) {
-      //   localStorage.setItem('userName', res.user_name);
-      //   localStorage.setItem('password', res.password);
-      // }
+      setRegister(resetRegister)
+      // setOpenRegister;
+      // setOpenSignIn;
+      dispatch(setOpenRegister(false))
+      dispatch(setOpenSignIn(true))
     }
     if (error) {
       console.log(error);
@@ -91,7 +78,12 @@ const RegisterDailog = () => {
   }, [data, error]);
 
   const hasEmpty = Object.values(register).includes('');
-  console.log(hasEmpty);
+  // console.log(hasEmpty);
+
+
+  // console.log('OpenRegister', openRegister);
+  // console.log('OpenSignIn', openSignIn);
+
 
   return (
     <body className="bg-white rounded-lg py-5">
@@ -186,37 +178,18 @@ const RegisterDailog = () => {
                     })
                   }
                 />
-                <div className="flex flex-row justify-between mb-8">
-                  <label className="relative inline-flex items-center mr-3 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={checkboks}
-                      onChange={(e) => setCheckboxes(e.target.checked)}
-                      value=""
-                      className="sr-only peer"
-                    />
-                    <div className="w-5 h-5 bg-white border-2 rounded-sm border-grey-500 peer peer-checked:border-0 peer-checked:bg-purple-blue-500">
-                      <img
-                        className=""
-                        src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/icons/check.png"
-                        alt="tick"
-                      />
-                    </div>
-                    <span className="ml-3 text-sm font-normal text-grey-900">
-                      תשאיר אותי מחובר
-                    </span>
-                  </label>
-                </div>
-                 
-                  <button
-                    type="button"
-                    disabled={hasEmpty}
-                    onClick={send}
-                    className={hasEmpty ? 'cursor-not-allowed w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500' :"cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500"}
-                  >
-                    הרשם
-                  </button>
-              
+                <button
+                  type="button"
+                  disabled={hasEmpty}
+                  onClick={send}
+                  className={
+                    hasEmpty
+                      ? 'cursor-not-allowed w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500'
+                      : 'cursor-pointer w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500'
+                  }
+                >
+                  הרשם
+                </button>
               </form>
             </div>
           </div>

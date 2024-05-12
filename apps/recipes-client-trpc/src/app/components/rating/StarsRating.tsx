@@ -1,17 +1,19 @@
 const StarsRating = ({ numRating }: { numRating: number | undefined }) => {
   return (
     <div className="inline-flex items-center">
-      {[0, 1, 2, 3, 4].map((star) => (
-        <span>
+      {[0, 1, 2, 3, 4].map((star, i) => (
+        <span key={i}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            fill="currentColor"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            fill={numRating && star < numRating ? 'currentColor' : 'none'}
             className={
               numRating && star < numRating
-                ? 'w-6 h-6 text-yellow-700 cursor-pointer'
-                : 'w-6 h-6 cursor-pointer  text-gray-400'
-            }
+                ? 'w-6 h-6 text-yellow-700'
+                : 'w-6 h-6 text-gray-700'
+            }      
           >
             <path
               fillRule="evenodd"

@@ -13,10 +13,11 @@ const CardRecipe = ({ recipe }: { recipe: RecipeBack }) => {
       onClick={() => navigate(`/recipe/${recipe.recipe_id}`)}
     >
       <div className="max-w-xs cursor-pointer rounded-lg bg-white p-2 shadow duration-150 hover:scale-105 hover:shadow-md">
-        <div className="w-72 h-full">
+        <div className="w-72 h-64">
           {recipe.image ? (
             <img
-              className="w-full rounded-lg object-cover object-center min-w-full"
+              // className="absolute inset-0 h-full w-full object-cover rounded-t-lg"
+              className="w-full rounded-lg object-cover object-center min-w-full max-h-52 min-h-full"
               src={recipe.image}
               alt={recipe.image}
             />
@@ -46,12 +47,10 @@ const CardRecipe = ({ recipe }: { recipe: RecipeBack }) => {
         <div className="relative mt-8 flex items-center gap-x-4">
           {/* <img src="kj" alt="" className="h-10 w-10 rounded-full bg-gray-50" /> */}
           <div className="flex flex-shrink-0 self-start cursor-pointer">
-                            <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
-                              <p className="text-xl text-white">
-                                {recipe.creator_name[0]}
-                              </p>
-                            </div>
-                          </div>
+            <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
+              <p className="text-xl text-white">{recipe.creator_name[0]}</p>
+            </div>
+          </div>
           <div className="text-sm leading-6">
             <p className="font-semibold text-gray-900">
               <span className="absolute inset-0" />

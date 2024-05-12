@@ -58,20 +58,20 @@ const PersonalReviews = () => {
                 <table className="w-full my-0 align-middle text-dark border-neutral-200">
                   <thead className="align-bottom">
                     <tr className="font-semibold text-[0.95rem] text-secondary-dark">
-                      <th className="pb-3 text-start min-w-[175px]">אימייל</th>
-                      <th className="pb-3 text-end min-w-[100px]">שם משתמש</th>
-                      <th className="pb-3 text-end min-w-[175px]">עוגה</th>
+                      <th className="pb-3 text-center min-w-[175px]">אימייל</th>
+                      <th className="pb-3 text-center min-w-[100px]">שם משתמש</th>
+                      <th className="pb-3 text-center min-w-[175px]">עוגה</th>
 
-                      <th className="pb-3 pr-12 text-end min-w-[175px]">
+                      <th className="pb-3 pr-12 text-center min-w-[175px]">
                         ביקורת
                       </th>
-                      <th className="pb-3 pr-12 text-end min-w-[175px]">
+                      <th className="pb-3 pr-12 text-center min-w-[175px]">
                         דירוג
                       </th>
-                      <th className="pb-3 pr-12 text-end min-w-[100px]">
+                      <th className="pb-3 pr-12 text-center min-w-[100px]">
                         ניתן ב
                       </th>
-                      <th className="pb-3 text-end min-w-[150px]">
+                      <th className="pb-3 text-center min-w-[150px]">
                         פעולות נוספות
                       </th>
                     </tr>

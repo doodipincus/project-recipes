@@ -10,18 +10,19 @@ import AddRecipe from './components/recipes/AddRecipe';
 import FavoriteRecipes from './components/PersonalArea/FavriteRecipes';
 import EditRecipe from './components/PersonalArea/EditRecipe';
 import FoodFestivals from './components/festivals/FoodFestivals';
-import Graphs from './components/AdminArea/Graphs';
+import Graphs from './components/charts/Graphs';
 import Layout from './components/Layout';
 import Redirect from './components/Redirect';
 import GetReviews from './components/AdminArea/GetReviews';
 import PersonalReviews from './components/PersonalArea/PersonalReveiws';
+import PageNotFound from './components/PageNotFound';
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="*" element={<Home />} /> */}
         <Route path="/" element={<Layout />}>
+          <Route path="*" element={<PageNotFound />} />
           <Route index element={<Redirect />} />
           <Route path="home" element={<Home />} />
           <Route path="recipes" element={<AllRecipes />} />
@@ -30,7 +31,7 @@ const Router = () => {
           <Route path="personalRecipe/:id" element={<PersonalRecipe />} />
           <Route path="editRecipe/:id" element={<EditRecipe />} />
           <Route path="favoriteRecipes/:id" element={<FavoriteRecipes />} />
-          <Route path="personalReviews" element={<PersonalReviews/>} />
+          <Route path="personalReviews" element={<PersonalReviews />} />
           <Route path="showDetails/:id" element={<ShowDetails />} />
           <Route path="allUsers" element={<GetUsers />} />
           <Route path="allReviews" element={<GetReviews />} />

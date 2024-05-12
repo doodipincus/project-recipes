@@ -62,37 +62,37 @@ const RowReview = ({ review }: { review: FavoriteBack }) => {
             </div>
           </div>
         </td>
-        <td className="p-3 pr-0 text-end">
+        <td className="p-3 pr-0 text-center">
           <span className="mb-1 font-semibold transition-colors duration-200 ease-in-out text-lg/normal text-secondary-inverse hover:text-primary">
             {review.user_name}
           </span>
         </td>
-        <td className="p-3 pr-0 text-end">
+        <td className="p-3 pr-0 text-center">
           <span
-            className="mb-1 font-semibold transition-colors duration-200 ease-in-out text-lg/normal text-secondary-inverse hover:text-primary"
+            className="mb-1 font-semibold transition-colors duration-200 ease-in-out text-lg/normal text-secondary-inverse text-blue-500 cursor-pointer"
             onClick={() => navigate(`/recipe/${cake?.recipe_id}`)}
           >
             {cake?.title}
           </span>
         </td>
-        <td className="p-3 pr-12 text-end">
-          <span className="text-center align-baseline inline-flex px-4 py-3 mr-auto items-center font-semibold text-[.95rem] leading-none text-primary bg-primary-light rounded-lg">
+        <td className="p-3 pr-12 text-center">
+          <span  className="mb-1 transition-colors duration-200 ease-in-out text-lg/normal text-secondary-inverse">
             {review.comment}
           </span>
         </td>
-        <td className="p-3 pr-12 text-end">
+        <td className="p-3 pr-12 text-center">
           <StarsRating numRating={review.stars} />
         </td>
-        <td className="pr-0 text-start">
+        <td className="pr-0 text-center">
           <span className="font-semibold text-light-inverse text-md/normal">
             {formatDateTime(review.createdAt ? review.createdAt : new Date())}
           </span>
         </td>
-        <td className="pr-0 text-start">
+        <td className="pr-0 flex justify-center">
           <button
             className={classNames(
-              'text-gray-300 hover:bg-gray-700 hover:text-white',
-              'block rounded-md px-3 py-2 text-base font-medium'
+              'bg-gray-200 text-gray-500 hover:bg-gray-700 hover:text-white',
+              'block rounded-md px-3 py-2 text-base font-medium mt-5'
             )}
             onClick={deleteReview}
             type="button"

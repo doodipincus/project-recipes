@@ -1,18 +1,22 @@
-import React, { useEffect } from 'react';
 import { Dialog } from '@material-tailwind/react';
 import SignInDailog from './SignInDailog';
 import { classNames } from '../../css/classes';
-import { useAtomValue } from 'jotai';
-import { modalRegisterAtom, registerAtom } from '../../utils/atoms';
+import { useAtom, useAtomValue } from 'jotai';
+import { modalSignInAtom } from '../../utils/atoms';
+import { useState } from 'react';
 
 export default function SignInModal() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen((cur) => !cur);
-  const registerModal = useAtomValue(modalRegisterAtom);
+  // const flag = useAtomValue(modalSignInAtom)
+  const [flag, setFlag] = useAtom(modalSignInAtom);
+  const [open, setOpen] = useState<boolean>(flag);
+  // const [open, setOpen] = useState<boolean>(flag);
+  // const [open, setOpen] = useState<boolean>(false);
+  const handleOpen = () => {setOpen((cur) => !cur); setFlag(!flag) };
+
+  // console.log('flag', flag);
+  // console.log('open', open);
   
-  // useEffect(() => {
-  //   setOpen(false);
-  // }, [registerModal]);
+  
 
   return (
     <>
@@ -28,10 +32,11 @@ export default function SignInModal() {
       <Dialog
         size="xs"
         open={open}
+        // handler={()=>{}}
         handler={handleOpen}
         className="bg-transparent shadow-none"
       >
-        <SignInDailog />
+        <SignInDailog handleOpen={handleOpen} />
       </Dialog>
     </>
   );

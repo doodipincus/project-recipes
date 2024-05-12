@@ -40,6 +40,8 @@ const PersonalRecipe = () => {
         setLoading(false);
         setErrorFromServer(res);
       }
+      setLoading(false);
+
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -71,7 +73,19 @@ const PersonalRecipe = () => {
   return (
     <div className="bg-white py-24 sm:py-32 flex">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* <Title /> */}
+      <div className="flex justify-center">
+          <div className="mx-auto max-w-2xl lg:mx-0">
+            <h2 className="text-lg font-bold tracking-tight text-gray-900 sm:text-3xl flex justify-center">
+              מסיבת הטעמים
+            </h2>
+            <h4 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-xl flex justify-center">
+              אתר המתכונים הגדול בישראל
+            </h4>
+            <p className="mt-2 text-4xl leading-8 text-gray-600 flex justify-center">
+              {`המתכונים של ${user.userName}`}{' '}
+            </p>
+          </div>
+        </div>   
         {loading ? (
           <div>
             <Skeleton />
@@ -82,10 +96,10 @@ const PersonalRecipe = () => {
               personalRecipe?.map((recipe) => (
                 <div>
                   <CardRecipe recipe={recipe} />
-                  <div className="flex justify-around">
+                  <div className="flex justify-around mt-4">
                     <button
                       className={classNames(
-                        'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'bg-gray-200 text-gray-500 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
                       onClick={() => deleteRecipe(recipe.recipe_id)}
@@ -94,7 +108,7 @@ const PersonalRecipe = () => {
                     </button>
                     <button
                       className={classNames(
-                        'text-gray-300 hover:bg-gray-700 hover:text-white',
+                        'bg-gray-200 text-gray-500 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium'
                       )}
                       onClick={() =>

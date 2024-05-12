@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { resetUserAtom, userAtom, userIsLoggedInAtom } from '../../utils/atoms';
-import { useAtom, useAtomValue } from 'jotai';
+import { userAtom, userIsLoggedInAtom } from '../../utils/atoms';
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import {
   Menu,
@@ -9,20 +9,19 @@ import {
   MenuItem,
 } from '@material-tailwind/react';
 import { ChevronUpIcon } from '@heroicons/react/24/solid';
+import { resetUser } from '../../utils/reset';
 
 const MenuProfile = () => {
   const [openMenuPerson, setOpenMenuPerson] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [userIsLoggedIn, setUserIsLoggedIn] = useAtom(userIsLoggedInAtom);
   const [user, setUser] = useAtom(userAtom);
-  const resetUser = useAtomValue(resetUserAtom);
   const navigate = useNavigate();
 
   const logout = () => {
     setUserIsLoggedIn(false);
     setUser(resetUser);
-    localStorage.removeItem('email');
-    localStorage.removeItem('password');
+    localStorage.removeItem('TOKEN');
   };
 
   return (
@@ -82,12 +81,16 @@ const MenuProfile = () => {
                   </MenuItem>
                 </MenuHandler>
                 <MenuList>
-                  <MenuItem
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                    onClick={() => navigate(`/favoriteRecipes/${user.userId}`)}
-                  >
-                    מתכונים שאהבת
-                  </MenuItem>
+                  {((user.reviews && user.reviews > 30) || user.isAdmin) && (
+                    <MenuItem
+                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                      onClick={() =>
+                        navigate(`/favoriteRecipes/${user.userId}`)
+                      }
+                    >
+                      מתכונים שאהבת
+                    </MenuItem>
+                  )}
                   <MenuItem
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                     onClick={() => navigate(`/personalRecipe/${user.userId}`)}

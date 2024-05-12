@@ -14,6 +14,7 @@ const ReviewsDailog = ({
 }) => {
   const [dataReviews, setDataReviews] = useState<FavoriteBack[]>([]);
   const setLoadingGlobal = useSetAtom(loadingAtom);
+  const [errorFromServer, setErrorFromServer] = useState('');
 
   const getReviews = async () => {
     if (id) {
@@ -23,6 +24,11 @@ const ReviewsDailog = ({
         if (reviews && typeof reviews !== 'string') {
           setLoadingGlobal(false);
           setDataReviews(reviews);
+          console.log(reviews);
+        }
+        if (reviews && typeof reviews === 'string') {
+          setLoadingGlobal(false);
+          setErrorFromServer(reviews);
           console.log(reviews);
         }
         console.log(reviews);
@@ -96,21 +102,22 @@ const ReviewsDailog = ({
 
         <div className="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
           <div className="flex items-center justify-center w-full lg:p-12">
-            <div className="items-center xl:p-10 text-center  ">
+            <div className="items-center xl:p-10 text-center">
               <h1 className="mb-10 text-2xl font-semibold ">
                 ביקורות וממליצים
               </h1>
               <table className="w-full my-0 align-middle text-dark border-neutral-200">
                 <thead className="align-bottom">
                   <tr className="font-semibold text-[0.95rem] text-secondary-dark">
-                    {/* <th className="pb-3 text-start min-w-[175px]">אימייל</th> */}
-                    <th className="pb-3 text-start min-w-[100px]">שם משתמש</th>
+                    <th className="pb-3 text-center min-w-[100px]">שם משתמש</th>
 
-                    <th className="pb-3 pr-12 text-end min-w-[175px]">
+                    <th className="pb-3 pr-12 text-center min-w-[175px]">
                       ביקורת
                     </th>
-                    <th className="pb-3 pr-12 text-end min-w-[175px]">דירוג</th>
-                    <th className="pb-3 pr-12 text-end min-w-[100px]">
+                    <th className="pb-3 pr-12 text-center min-w-[175px]">
+                      דירוג
+                    </th>
+                    <th className="pb-3 pr-12 text-center min-w-[100px]">
                       ניתן ב
                     </th>
                   </tr>
@@ -121,6 +128,9 @@ const ReviewsDailog = ({
                   ))}
                 </tbody>
               </table>
+              {errorFromServer && (
+                <p className="font-black text-2xl">{errorFromServer}</p>
+              )}
             </div>
           </div>
         </div>

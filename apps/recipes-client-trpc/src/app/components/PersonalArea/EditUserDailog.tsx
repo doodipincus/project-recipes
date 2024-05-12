@@ -11,7 +11,6 @@ const EditUserDailog = () => {
   const [details, setDetails] = useState({
     userName: user.userName,
     email: user.email,
-    password: user.password,
   });
 
   const setLoadingGlobal = useSetAtom(loadingAtom);
@@ -26,7 +25,7 @@ const EditUserDailog = () => {
     console.log('email', user.email);
     console.log('details', details);
 
-    if (user.email && details.email && details.password && details.userName) {
+    if (user.email && details.email && details.userName) {
       try {
         setLoadingGlobal(true);
         const res = await trpc.users.updateUser.mutate({
@@ -38,7 +37,17 @@ const EditUserDailog = () => {
         });
         if (res && typeof res !== 'string') {
           setLoadingGlobal(false);
-          setUser(res);
+          setUser({
+            email: res.email,
+            userId: res.user_id,
+            userName: res.user_name,
+            isAdmin: res.isAdmin,
+            reviews: res.reviews,
+            shared: res.shared,
+            createdAt: res.createdAt,
+            updatedAt: res.updatedAt,
+          });
+
           console.log(res);
           notify();
         }

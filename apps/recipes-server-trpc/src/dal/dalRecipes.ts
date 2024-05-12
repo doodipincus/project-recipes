@@ -34,7 +34,7 @@ export const getRecipes = async () => {
         return r.dataValues;
     });
     console.log(recipes);
-    if(recipes) return recipes;
+    if (recipes) return recipes;
 };
 
 export const getRecipeByCreator = async (email: string) => {
@@ -46,7 +46,6 @@ export const getRecipeByCreator = async (email: string) => {
         return r.dataValues;
     })
     if (recipes) return recipes;
-    // return user;
 };
 
 export const updateRecipeDal = async (id: string, update: Recipes, token: string) => {
@@ -100,12 +99,12 @@ export const deleteRecipeDal = async (id: string, token: string) => {
             creator_email: tokenObj.email,
         },
     });
-    if(deleteRecipe) return true;
+    if (deleteRecipe) return true;
     return false;
 };
 
 
-export const addRatingDal = async (id: string, email: string, user_name: string, newRating: number, comment:string) => {
+export const addRatingDal = async (id: string, email: string, user_name: string, newRating: number, comment: string) => {
     const favorite = await Favorite.findOne({
         where: {
             recipe_id: id,
@@ -136,13 +135,6 @@ export const addRatingDal = async (id: string, email: string, user_name: string,
                     }
                 }
             )
-            // const create = await Favorite.create({
-            //     recipe_id: id,
-            //     user_email: email,
-            //     user_name: user_name,
-            //     stars: newRating,
-            //     comment: comment,
-            // }) 
             const create = await createFavorite({
                 recipe_id: id,
                 user_email: email,
@@ -166,7 +158,7 @@ export const addRatingDal = async (id: string, email: string, user_name: string,
             }
         );
         if (affectedRows) {
-            await Favorite.update({
+            const update = await Favorite.update({
                 stars: newRating,
                 comment: comment,
             }, {
@@ -175,6 +167,7 @@ export const addRatingDal = async (id: string, email: string, user_name: string,
                     user_email: email,
                 }
             })
+            // if (update) 
         }
         return true;
     }

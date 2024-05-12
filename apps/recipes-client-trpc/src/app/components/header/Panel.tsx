@@ -25,8 +25,6 @@ const Panel = () => {
   const logout = () => {
     setUserIsLoggedIn(false);
     setUser(resetUser);
-    localStorage.removeItem('email');
-    localStorage.removeItem('password');
     localStorage.removeItem('TOKEN');
   };
 
@@ -169,12 +167,14 @@ const Panel = () => {
                   >
                     מתכונים שאהבת
                   </MenuItem>
-                  <MenuItem
-                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                    onClick={() => navigate(`/personalRecipe/${user.userId}`)}
-                  >
-                    מתכונים ששיתפת
-                  </MenuItem>
+                  {((user.reviews && user.reviews> 30 )|| user.isAdmin) && (
+                    <MenuItem
+                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                      onClick={() => navigate(`/personalRecipe/${user.userId}`)}
+                    >
+                      מתכונים ששיתפת
+                    </MenuItem>
+                  )}
                   <MenuItem
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                     onClick={() => navigate(`/personalReviews`)}
